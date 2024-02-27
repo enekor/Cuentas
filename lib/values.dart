@@ -8,8 +8,29 @@ class Values {
   }
   Values._internal();
 
-  List<Cuenta> cuentas = [
-    new Cuenta("Nombre",[]),
-    new Cuenta("Nombre2",[])
+  final nombresMes = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
+
+  List<Cuenta> cuentas = [
+    new Cuenta(1,"Nombre",[]),
+    new Cuenta(2,"Nombre2",[])
+  ];
+
+  int seleccionado = -1;
+
+  void seleccionar(int id){
+    seleccionado = cuentas.indexOf(cuentas.where((v)=>v.id==id).first);
+  }
 }

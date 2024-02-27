@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/values.dart';
 import 'package:flutter_app/widgets/ItemView.dart';
+import 'package:flutter_app/pantallas/info.dart';
 
 class Home extends StatefulWidget {
   const Home({ Key? key }) : super(key: key);
@@ -14,12 +15,26 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: 
-        Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            
-            children: Values().cuentas.map<Widget>((cuenta)=>ItemCard(cuenta.Nombre,cuenta.GetTotal())).toList()
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              
+              children: Values().cuentas.map<Widget>(
+                (cuenta) => InkWell(
+                  onTap:(){
+                    Values().seleccionar(cuenta.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder:(context)=>Info())
+                    );
+                  },
+                  child: ItemCard(cuenta.Nombre,cuenta.GetTotal())
+                )
+              ).toList()
+            ),
           ),
         ),
     );

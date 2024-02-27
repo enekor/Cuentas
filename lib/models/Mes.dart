@@ -1,9 +1,10 @@
 class Mes{
-  Map<String,double> Gastos;
-  double Ingreso;
-  Map<String,double> Extras;
+  Map<String,double> Gastos = {};
+  double Ingreso = 0;
+  Map<String,double> Extras = {};
+  String NMes;
 
-  Mes(this.Ingreso,this.Gastos,this.Extras);
+  Mes(this.NMes);
 
   double GetGastos(){
     double ret = 0;

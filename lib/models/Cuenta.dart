@@ -1,10 +1,11 @@
 import 'package:flutter_app/models/Mes.dart';
 
 class Cuenta{
+  int id;
   String Nombre;
   List<Mes> Meses;
 
-  Cuenta( this.Nombre,this.Meses);
+  Cuenta(this.id,this.Nombre,this.Meses);
 
   double GetGastosTotales(){
     double ret = 0;
