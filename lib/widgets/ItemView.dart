@@ -1,12 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-Widget ItemCard(_) => Card(
-      child: Column(
-        children: [
-          Text(("hola")),
-          ElevatedButton(onPressed: () {}, child: Text("boton"))
-        ],
-      ),
-    );
+Widget ItemCard(String nombre,double ahorro) => Container(
+  height: 100,
+  width: 100,
+  child:   Card(
+        
+        child: Column(
+          children: [
+            Icon(
+              Icons.beach_access,
+              color: Colors.amber,
+              size:50.0
+            ),
+            Text(nombre),
+            Text(ahorro.toString()+"€")
+          ],
+        )
+    ),
+);
