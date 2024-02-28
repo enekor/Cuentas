@@ -8,7 +8,7 @@ Widget ItemCard(String nombre,double ahorro) => Container(
         child: Column(
           children: [
             Icon(
-              Icons.beach_access,
+              Icons.face,
               color: Colors.amber,
               size:50.0
             ),

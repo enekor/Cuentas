@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
                 (cuenta) => InkWell(
                   onTap:(){
                     Values().seleccionar(cuenta.id);
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder:(context)=>Info())
                     );

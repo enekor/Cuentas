@@ -20,6 +20,15 @@ class Mes{
     return ret;
   }
 
+  double GetExtras(){
+    double ret = 0;
+    for (double extra in Extras.values){
+      ret+= extra;
+    }
+
+    return ret;
+  }
+
   double GetAhorros(){
     return this.Ingreso-GetGastos();
   }
