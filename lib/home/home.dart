@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/values.dart';
-import 'package:flutter_app/widgets/ItemView.dart';
-import 'package:flutter_app/pantallas/info.dart';
+import 'package:cuentas_android/values.dart';
+import 'package:cuentas_android/widgets/ItemView.dart';
+import 'package:cuentas_android/pantallas/info.dart';
 
 class Home extends StatefulWidget {
   const Home({ Key? key }) : super(key: key);

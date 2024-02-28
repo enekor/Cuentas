@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/home/home.dart';
+import 'package:cuentas_android/home/home.dart';
 
 void main() {
   runApp(const MyApp());

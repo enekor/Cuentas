@@ -1,4 +1,4 @@
-import 'package:flutter_app/models/Mes.dart';
+import 'package:cuentas_android/models/Mes.dart';
 
 class Cuenta{
   int id;

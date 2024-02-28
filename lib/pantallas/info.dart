@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/values.dart';
-import 'package:flutter_app/models/Cuenta.dart';
-import 'package:flutter_app/models/Mes.dart';
-import 'package:flutter_app/home/home.dart';
-import 'package:flutter_app/widgets/GastoView.dart';
+import 'package:cuentas_android/values.dart';
+import 'package:cuentas_android/models/Cuenta.dart';
+import 'package:cuentas_android/models/Mes.dart';
+import 'package:cuentas_android/home/home.dart';
+import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:get/get.dart';
 import 'package:animate_do/animate_do.dart';
 RxInt GastoSeleccionado = new RxInt(-1);
