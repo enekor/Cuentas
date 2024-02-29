@@ -23,6 +23,7 @@ class _InfoState extends State<Info> {
   String nombrenuevo = "Gasto";
   double valornuevo = 0;
   RxBool mostrarGastos = false.obs;
+  RxBool ingresoEditar = false.obs;
 
 //metodos
   bool HayDatos(){
@@ -39,7 +40,6 @@ class _InfoState extends State<Info> {
   void ChangeIngreso(double valor){
     c.Meses.where((v)=>v.NMes == mes.value).first.Ingreso = valor;
   }
-
 
   List<Widget> GetGastos(){
     List<Widget> ret = [];
@@ -143,28 +143,59 @@ class _InfoState extends State<Info> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Card(
-                          child: Column(
-                             mainAxisSize:MainAxisSize.min,
-                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("Ingresos"),
-                              Text(c.Meses.where((v)=>v.NMes==mes.value).first.Ingreso.toString())
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          child: Card(
-                            child: Column(
-                              mainAxisSize:MainAxisSize.min,
-                             mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Gastos"),
-                                Text(c.Meses.where((v)=>v.NMes==mes.value).first.GetGastos().toString())
-                              ],
+                        Expanded(
+                          flex:5,
+                          child: InkWell(
+                            onTap: ()=>ingresoEditar.value = true,
+                            child: Card(
+                              child: Column(
+                                 mainAxisSize:MainAxisSize.min,
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Ingresos"),
+                                  ingresoEditar.value
+                                  ?Row(
+                                    children: [
+                                      IconButton(
+                                        icon:Icon(Icons.check),
+                                        onPressed: ()=>ingresoEditar.value = false,
+                                      ),
+                                      Expanded(
+                                        child: TextField(
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(
+                                            labelText: "Monto"
+                                          ),
+                                          onChanged: (v){
+                                            setState(() {
+                                              ChangeIngreso(double.parse(v));
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  :Text(c.Meses.where((v)=>v.NMes==mes.value).first.Ingreso.toString())
+                                ],
+                              ),
                             ),
                           ),
-                          onTap: ()=>mostrarGastos.value = !mostrarGastos.value
+                        ),
+                        Expanded(
+                          flex:5,
+                          child: InkWell(
+                            child: Card(
+                              child: Column(
+                                mainAxisSize:MainAxisSize.min,
+                               mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Gastos"),
+                                  Text(c.Meses.where((v)=>v.NMes==mes.value).first.GetGastos().toString())
+                                ],
+                              ),
+                            ),
+                            onTap: ()=>mostrarGastos.value = !mostrarGastos.value
+                          ),
                         )
                       ],
                     ),
