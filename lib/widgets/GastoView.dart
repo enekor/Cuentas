@@ -7,35 +7,57 @@ Widget GastoView(
     void OnSeleccionar(int),
     String nombre,
     double valor,
-    Rx<int> seleccionado,
     int contador) {
-  return seleccionado.value == contador
-      ? Obx(
-          () => InkWell(
-              onTap: () => OnSeleccionar(contador),
-              child: Row(
-                children: [
-                  IconButton(
-                      icon: Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                      onPressed: () => OnSave(nombre, valor)),
-                  IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => OnDelete(nombre, valor)),
-                  TextField(
-                      decoration: InputDecoration(labelText: "Nombre de gasto"),
-                      onChanged: (v) => nombre = v),
-                  TextField(
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          InputDecoration(labelText: "Monto de " + nombre),
-                      onChanged: (v) => valor = double.parse(v))
-                ],
-              )),
-        )
-      : Row(
-          children: [Text(nombre), Text(valor.toString() + "€")],
-        );
+      RxBool tocado = false.obs;
+  return Obx(()=>tocado.value
+      ? Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: IconButton(
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ),
+                  onPressed: () {
+                    OnSave(nombre, valor);
+                    tocado.value = false;
+                  }),
+            ),
+            SizedBox(width:25),
+            Expanded(
+              child: IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => OnDelete(nombre, valor)),
+            ),
+            SizedBox(width:25),
+            Expanded(
+              child: Text(nombre)
+            ),
+            SizedBox(width:25),
+            Expanded(
+              child: TextField(
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(labelText: "Monto"),
+                  onChanged: (v) => valor = double.parse(v)),
+            ),
+            SizedBox(width:25)
+          ],
+        ),
+      )
+      : GestureDetector(
+        onTap: ()=>tocado.value = true,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(nombre), 
+              Text(valor.toString() + "€")
+            ],
+          ),
+        ),
+      )
+    );
 }
