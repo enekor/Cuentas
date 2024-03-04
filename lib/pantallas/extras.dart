@@ -48,15 +48,23 @@ class _ExtrasState extends State<Extras> {
       return ret;
     }
 
-    return PopScope(
-      onPopInvoked: (ispop){
+    return WillPopScope(
+      onWillPop: ()async{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder:(context)=>Info())
+        );
+
+        return true;
+      },
+      /*onPopInvoked: (ispop){
         if(ispop){
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder:(context)=>Info())
           );
         }
-      },
+      },*/
       child: Obx(()=>Scaffold(
           resizeToAvoidBottomInset:true,
           floatingActionButton: FloatingActionButton(
