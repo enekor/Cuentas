@@ -95,14 +95,6 @@ class _InfoState extends State<Info> {
         return true;
       },
       child: Obx(()=> Scaffold(
-          floatingActionButton: mostrarGastos.value
-          ?FloatingActionButton(
-            onPressed: ()=>setState(() {
-              GastoSeleccionado.value = -2;
-            }),
-            child: Icon(Icons.add),
-          )
-          :Container(),
           appBar:AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -194,70 +186,74 @@ class _InfoState extends State<Info> {
                                 ],
                               ),
                             ),
-                            onTap: ()=>mostrarGastos.value = !mostrarGastos.value
+                            onTap: ()=>showModalBottomSheet(
+                              context:context,
+                              builder: (context)=>Obx(()=>
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisSize:MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          mainAxisSize:MainAxisSize.min,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: GetGastos(),
+                                        ),
+                                        GastoSeleccionado.value == -2
+                                          ?Row(
+                                            children:[
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(Icons.check),
+                                                  onPressed: ()=>setState(() {
+                                                    c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombrenuevo] = valornuevo;
+                                                    GastoSeleccionado.value = -1;
+                                                  }),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10,),
+                                              Expanded(
+                                                flex:2,
+                                                child: TextField(
+                                                  decoration: InputDecoration(
+                                                    labelText: "Nombre"
+                                                  ),
+                                                  onChanged: (v){
+                                                    nombrenuevo = v;
+                                                  },
+                                                ),
+                                              ),
+                                              SizedBox(width: 10,),
+                                              Expanded(
+                                                flex:2,
+                                                child: TextField(
+                                                  keyboardType: TextInputType.number,
+                                                  decoration: InputDecoration(
+                                                    labelText: "Monto"
+                                                  ),
+                                                  onChanged: (v){
+                                                    valornuevo = double.parse(v);
+                                                  },
+                                                ),
+                                              ),
+
+                                            ]
+                                          )
+                                          :SizedBox(),
+                                          FloatingActionButton(
+                                            onPressed:()=>GastoSeleccionado.value = -2,
+                                            child: Icon(Icons.add)
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                              ),
+                              )
+                            )
                           ),
-                        )
                       ],
                     ),
-                    mostrarGastos.value
-                      ?FadeInUp(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisSize:MainAxisSize.min,
-                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  mainAxisSize:MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: GetGastos(),
-                                ),
-                                GastoSeleccionado.value == -2
-                                  ?Row(
-                                    children:[
-                                      Expanded(
-                                        child: IconButton(
-                                          icon: Icon(Icons.check),
-                                          onPressed: ()=>setState(() {
-                                            c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombrenuevo] = valornuevo;
-                                            GastoSeleccionado.value = -1;
-                                          }),
-                                        ),
-                                      ),
-                                      SizedBox(width: 10,),
-                                      Expanded(
-                                        flex:2,
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            labelText: "Nombre"
-                                          ),
-                                          onChanged: (v){
-                                            nombrenuevo = v;
-                                          },
-                                        ),
-                                      ),
-                                      SizedBox(width: 10,),
-                                      Expanded(
-                                        flex:2,
-                                        child: TextField(
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            labelText: "Monto"
-                                          ),
-                                          onChanged: (v){
-                                            valornuevo = double.parse(v);
-                                          },
-                                        ),
-                                      ),
-
-                                    ]
-                                  )
-                                  :SizedBox(),
-                              ],
-                            ),
-                        ),
-                      )
-                      :SizedBox()
                   ],
                 )
               :Column(

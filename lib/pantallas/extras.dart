@@ -12,10 +12,20 @@ class Extras extends StatefulWidget {
 }
 
 class _ExtrasState extends State<Extras> {
-  Rx<Map<String,double>> extras = new Rx<Map<String,double>>(Values().cuentas[Values().seleccionado].Meses.where((v)=>v.NMes == Values().GetMes()).first.Extras);
+  Map<String,double> extras = Values().cuentas[Values().seleccionado].Meses.where((v)=>v.NMes == Values().GetMes()).first.Extras;
   String nuevoNombre = "";
   double nuevoValor = 0;
   RxBool nuevo = false.obs;
+
+  void ChangeExtra(){
+    setState(() {
+      if(nuevoNombre != "" && nuevoValor >0){
+        extras[nuevoNombre] = nuevoValor;
+        nuevoNombre = "";
+        nuevoValor = 0;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +33,11 @@ class _ExtrasState extends State<Extras> {
     List<Widget> GetExtras(){
       List<Widget> ret = [];
 
-      extras.value.forEach((nombre,valor) {
+      extras.forEach((nombre,valor) {
         
         ret.add(GastoView(
-          (nombre,valor)=>extras.value[nombre]=valor,
-          (nombre,valor)=>extras.value.removeWhere((n,v)=>n==nombre && v==valor),
+          (nombre,valor)=>extras[nombre]=valor,
+          (nombre,valor)=>extras.removeWhere((n,v)=>n==nombre && v==valor),
           (_){},
           nombre,
           valor,
@@ -35,44 +45,6 @@ class _ExtrasState extends State<Extras> {
         ));
       });
 
-      ret.add(nuevo.value
-        ?Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              flex:2,
-              child: IconButton(
-                icon: Icon(Icons.check),
-                onPressed: ()=>extras.value[nuevoNombre] = nuevoValor,
-              ),
-            ),
-            Expanded(
-              flex:4,
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Nombre"
-                ),
-                onChanged: (v){
-                  nuevoNombre = v;
-                },
-              ),
-            ),
-            Expanded(
-              flex:4,
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Monto"
-                ),
-                onChanged: (v){
-                  nuevoValor = double.parse(v);
-                },
-              ),
-            )
-          ],
-        )
-        :SizedBox());
       return ret;
     }
 
@@ -93,7 +65,49 @@ class _ExtrasState extends State<Extras> {
           body: Padding(
             padding: EdgeInsets.all(35),
             child: Column(
-              children: GetExtras()
+              children: [
+                Column(
+                  children: GetExtras()
+                ),
+                nuevo.value
+                ?Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(
+                      flex:2,
+                      child: IconButton(
+                        icon: Icon(Icons.check),
+                        onPressed: ()=>ChangeExtra(),
+                      ),
+                    ),
+                    Expanded(
+                      flex:4,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: "Nombre"
+                        ),
+                        onChanged: (v){
+                          nuevoNombre = v;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      flex:4,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: "Monto"
+                        ),
+                        onChanged: (v){
+                          nuevoValor = double.parse(v);
+                        },
+                      ),
+                    )
+                  ],
+                )
+                :SizedBox()
+              ],
             )
           )
         ),
