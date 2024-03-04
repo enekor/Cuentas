@@ -58,6 +58,7 @@ class _ExtrasState extends State<Extras> {
         return true;
       },
       child: Obx(()=>Scaffold(
+          resizeToAvoidBottomInset:true,
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: ()=>nuevo.value = !nuevo.value,

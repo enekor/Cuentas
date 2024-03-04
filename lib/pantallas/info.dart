@@ -95,6 +95,7 @@ class _InfoState extends State<Info> {
         return true;
       },
       child: Obx(()=> Scaffold(
+        resizeToAvoidBottomInset: true,
           appBar:AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -248,7 +249,8 @@ class _InfoState extends State<Info> {
                                       ],
                                     ),
                                   ),
-                              ),
+                                ),
+                                ),
                               )
                             )
                           ),
