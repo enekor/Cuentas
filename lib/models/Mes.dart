@@ -10,7 +10,9 @@ class Mes{
     double ret = 0;
 
     for(double g in this.Gastos.values){
-        ret+=g;
+        if(g>0){
+          ret+=g;
+        }
     }
 
     for(double e in this.Extras.values){
@@ -29,7 +31,12 @@ class Mes{
     return ret;
   }
 
+  double GetIngresos(){
+    double extras = -1*(Gastos.values.where((v)=>v<0).fold(0, (previousValue, value) => previousValue + value));
+    return this.Ingreso+extras;
+  }
+
   double GetAhorros(){
-    return this.Ingreso-GetGastos();
+    return GetIngresos()-GetGastos();
   }
 }

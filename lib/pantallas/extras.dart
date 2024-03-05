@@ -23,6 +23,7 @@ class _ExtrasState extends State<Extras> {
         extras[nuevoNombre] = nuevoValor;
         nuevoNombre = "";
         nuevoValor = 0;
+        nuevo.value = false;
       }
     });
   }
@@ -71,53 +72,59 @@ class _ExtrasState extends State<Extras> {
             child: Icon(Icons.add),
             onPressed: ()=>nuevo.value = !nuevo.value,
           ),
-          body: Padding(
-            padding: EdgeInsets.all(35),
-            child: Column(
-              children: [
-                Column(
-                  children: GetExtras()
-                ),
-                nuevo.value
-                ?Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      flex:2,
-                      child: IconButton(
-                        icon: Icon(Icons.check),
-                        onPressed: ()=>ChangeExtra(),
-                      ),
-                    ),
-                    Expanded(
-                      flex:4,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: "Nombre"
-                        ),
-                        onChanged: (v){
-                          nuevoNombre = v;
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex:4,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: "Monto"
-                        ),
-                        onChanged: (v){
-                          nuevoValor = double.parse(v);
-                        },
-                      ),
-                    )
-                  ],
-                )
-                :SizedBox()
-              ],
+          body: Container(
+            decoration: BoxDecoration(
+            image:DecorationImage(
+              image: AssetImage("/assets/images/fondo.jpg"),
+              fit:BoxFit.cover
             )
+          ),
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Column(
+                    children: GetExtras()
+                  ),
+                  nuevo.value
+                  ?Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.check),
+                          onPressed: ()=>ChangeExtra(),
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: "Nombre"
+                          ),
+                          onChanged: (v){
+                            nuevoNombre = v;
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: "Monto"
+                          ),
+                          onChanged: (v){
+                            nuevoValor = double.parse(v);
+                          },
+                        ),
+                      )
+                    ],
+                  )
+                  :SizedBox()
+                ],
+              )
+            ),
           )
         ),
       ),

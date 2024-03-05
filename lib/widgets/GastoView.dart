@@ -9,53 +9,82 @@ Widget GastoView(
     double valor,
     int contador) {
       RxBool tocado = false.obs;
+      RxBool borrado = false.obs;
   return Obx(()=>tocado.value
-      ? Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: IconButton(
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  ),
-                  onPressed: () {
-                    OnSave(nombre, valor);
-                    tocado.value = false;
-                  }),
-            ),
-            SizedBox(width:25),
-            Expanded(
-              child: IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => OnDelete(nombre, valor)),
-            ),
-            SizedBox(width:25),
-            Expanded(
-              child: Text(nombre)
-            ),
-            SizedBox(width:25),
-            Expanded(
-              child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: "Monto"),
-                  onChanged: (v) => valor = double.parse(v)),
-            ),
-            SizedBox(width:25)
-          ],
+      ? Padding(
+        padding: const EdgeInsets.only(top:8,bottom: 8),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                flex:3,
+                child: Text(nombre)
+              ),
+              Expanded(
+                flex:5,
+                child: TextField(
+                    keyboardType: TextInputType.number,
+                    decoration:
+                        InputDecoration(labelText: "Monto"),
+                    onChanged: (v) => valor = double.parse(v)),
+              ),
+              Expanded(
+                flex:1,
+                child: IconButton(
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    ),
+                    onPressed: () {
+                      OnSave(nombre, valor);
+                      tocado.value = false;
+                    }),
+              ),
+              Expanded(
+                flex:1,
+                child: IconButton(
+                    icon: Icon(Icons.cancel, color: Colors.red),
+                    onPressed: (){
+                      tocado.value = false;
+                      borrado.value = true;
+                      OnDelete(nombre, valor);
+                    }),
+              ),
+            ],
+          ),
         ),
       )
       : GestureDetector(
         onTap: ()=>tocado.value = true,
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(nombre), 
-              Text(valor.toString() + "€")
-            ],
+        child: Padding(
+          padding: const EdgeInsets.only(top:10.0,bottom: 10),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: borrado == false
+              ?[
+                Text(nombre), 
+                Text(valor.toString() + "€")
+              ]
+              :[
+                Text(
+                  nombre,
+                  style:TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    color: Colors.red
+                  )
+                ),
+                IconButton(
+                  icon: Icon(Icons.restore),
+                  onPressed: (){
+                    OnSave(nombre,valor);
+                    borrado.value = false;
+                  },
+                  color: Colors.blue,
+                )
+              ],
+            ),
           ),
         ),
       )

@@ -16,25 +16,33 @@ class _HomeState extends State<Home> {
     return Scaffold(
         resizeToAvoidBottomInset:true,
       body: 
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              
-              children: Values().cuentas.map<Widget>(
-                (cuenta) => InkWell(
-                  onTap:(){
-                    Values().seleccionar(cuenta.id);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder:(context)=>Info())
-                    );
-                  },
-                  child: ItemCard(cuenta.Nombre,cuenta.GetTotal())
-                )
-              ).toList()
+        Container(
+          decoration: BoxDecoration(
+            image:DecorationImage(
+              image: AssetImage("/assets/images/fondo.jpg"),
+              fit:BoxFit.cover
+            )
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                
+                children: Values().cuentas.map<Widget>(
+                  (cuenta) => InkWell(
+                    onTap:(){
+                      Values().seleccionar(cuenta.id);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder:(context)=>Info())
+                      );
+                    },
+                    child: ItemCard(cuenta.Nombre,cuenta.GetTotal())
+                  )
+                ).toList()
+              ),
             ),
           ),
         ),

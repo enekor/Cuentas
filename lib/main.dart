@@ -17,11 +17,21 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.indigo,
         useMaterial3: true,
         brightness: Brightness.light,
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(fontSize: 15),
+          bodyLarge: TextStyle(fontSize: 20),
+          bodySmall: TextStyle(fontSize: 12),
+        )
       ),
       darkTheme: ThemeData(
         colorSchemeSeed: Colors.blue,
         useMaterial3: true,
         brightness: Brightness.dark,
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(fontSize: 15),
+          bodyLarge: TextStyle(fontSize: 20),
+          bodySmall: TextStyle(fontSize: 12),
+        )
       ),
       home:  const Scaffold(
         body: Home()

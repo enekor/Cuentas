@@ -20,7 +20,7 @@ class Cuenta{
     double ret = 0;
 
     for(Mes mes in this.Meses){
-      ret+=mes.Ingreso-mes.GetGastos();
+      ret+=mes.GetAhorros();
     }
 
     return ret;
