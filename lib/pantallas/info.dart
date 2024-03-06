@@ -1,8 +1,9 @@
+import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Mes.dart';
-import 'package:cuentas_android/home/home.dart';
+import 'dart:math' as math;
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:get/get.dart';
 import 'package:cuentas_android/pantallas/extras.dart';
@@ -16,7 +17,10 @@ class Info extends StatefulWidget {
   _InfoState createState() => _InfoState();
 }
 
-class _InfoState extends State<Info> {
+class _InfoState extends State<Info>{
+
+ 
+
   RxString mes = Values().GetMes().obs;
   Cuenta c = Values().cuentas[Values().seleccionado];
   String nombrenuevo = "Gasto";
@@ -28,7 +32,7 @@ class _InfoState extends State<Info> {
   bool HayDatos(){
     bool exists = c.Meses.where((v)=>v.NMes == mes.value).isNotEmpty;
     if(!exists){
-      c.Meses.add(new Mes(mes.value));
+      c.Meses.add(Mes(mes.value));
       return false;
     }
     else{
@@ -76,8 +80,8 @@ class _InfoState extends State<Info> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text("Extras"),
-              Text(c.Meses.where((v)=>v.NMes==mes.value).first.GetExtras().toString()+"€")
+              const Text("Extras"),
+              Text("${c.Meses.where((v)=>v.NMes==mes.value).first.GetExtras()}€")
             ],
           ),
         ),
@@ -119,57 +123,45 @@ class _InfoState extends State<Info> {
 //pantalla
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: ()async {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder:(context)=>Home())
-        );
-        return true;
+    return PopScope(
+      onPopInvoked: (_) {
+        debugPrint("hola");
       },
-        /*onPopInvoked: (ispop) {
-        if(ispop) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Home())
-          );
-        }
-      },*/
       child: Obx(()=> Scaffold(
         resizeToAvoidBottomInset: true,
           appBar:AppBar(
             centerTitle: false,
-            backgroundColor: Colors.purple.shade100,
+            backgroundColor: Theme.of(context).primaryColor,
             elevation: 0.0,
             title: c.Meses.where((v)=>v.NMes == mes.value).isNotEmpty
               ?Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   MediaQuery(
-                    data:MediaQueryData.fromWindow(WidgetsBinding.instance.window),
-                    child: Container(
+                    data:MediaQueryData.fromView(WidgetsBinding.instance.window),
+                    child: SizedBox(
                       width:MediaQuery.of(context).size.width*0.5,
                       child: Card(
                         child:Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text(mes.value),
-                            Text(c.Meses.where((v)=>v.NMes == mes.value).first.GetAhorros().toString()+"€")
+                            Text("${c.Meses.where((v)=>v.NMes == mes.value).first.GetAhorros()}€")
                           ],
                         )
                       ),
                     ),
                   ),
                   MediaQuery(
-                    data:MediaQueryData.fromWindow(WidgetsBinding.instance.window),
-                    child: Container(
+                    data:MediaQueryData.fromView(WidgetsBinding.instance.window),
+                    child: SizedBox(
                       width:MediaQuery.of(context).size.width*0.6,
                       child: Card(
                         child:Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children:[
                             Text(c.Nombre),
-                            Text(c.GetTotal().toString()+"€")
+                            Text("${c.GetTotal()}€")
                           ]
                         )
                       ),
@@ -177,15 +169,10 @@ class _InfoState extends State<Info> {
                   )
                 ],
               )
-              :Text("Inicio de mes"),
+              :const Text("Inicio de mes"),
           ),
-          body: Container(
-            decoration: BoxDecoration(
-            image:DecorationImage(
-              image: AssetImage("/assets/images/fondo.jpg"),
-              fit:BoxFit.cover
-            )
-          ),
+          body: CustomPaint(
+            painter: MyPattern(),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Center(
@@ -197,10 +184,13 @@ class _InfoState extends State<Info> {
                       Padding(
                         padding: const EdgeInsets.only(bottom:20.0),
                         child: DropdownButtonFormField(
+                          dropdownColor: Theme.of(context).primaryColor,
                           decoration: InputDecoration(
+                            filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
+                            fillColor: Theme.of(context).primaryColor
                           ),
                           value: mes.value,
                           items: Values().nombresMes.map((item) {
@@ -231,11 +221,11 @@ class _InfoState extends State<Info> {
                                         ingresoEditar.value
                                         ?Row(
                                           children: [
-                                            Text("Ingresos"),
+                                            const Text("Ingresos"),
                                             Expanded(
                                               child: TextField(
                                                 keyboardType: TextInputType.number,
-                                                decoration: InputDecoration(
+                                                decoration: const InputDecoration(
                                                   labelText: "Monto"
                                                 ),
                                                 onChanged: (v){
@@ -246,7 +236,7 @@ class _InfoState extends State<Info> {
                                               ),
                                             ),
                                             IconButton(
-                                              icon:Icon(Icons.check),
+                                              icon:const Icon(Icons.check),
                                               onPressed: ()=>ingresoEditar.value = false,
                                             )
                                           ],
@@ -256,7 +246,7 @@ class _InfoState extends State<Info> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              Text("Ingresos"),
+                                              const Text("Ingresos"),
                                               Text(c.Meses.where((v)=>v.NMes==mes.value).first.Ingreso.toString()),
                                             ],
                                           ),
@@ -270,7 +260,7 @@ class _InfoState extends State<Info> {
                                           children:[
                                             Expanded(
                                               child: IconButton(
-                                                icon:Icon(Icons.check),
+                                                icon:const Icon(Icons.check),
                                                 color: Colors.green,
                                                 onPressed: ()=>setState(() {
                                                   c.Meses.where((v)=>v.NMes == mes.value).first.Gastos[nombrenuevo] = valornuevo*-1;
@@ -278,11 +268,11 @@ class _InfoState extends State<Info> {
                                                 }),
                                               ),
                                             ),
-                                            SizedBox(width:10),
+                                            const SizedBox(width:10),
                                             Expanded(
                                               flex:2,
                                               child: TextField(
-                                                decoration: InputDecoration(
+                                                decoration: const InputDecoration(
                                                   labelText: "Nombre"
                                                 ),
                                                 onChanged: (v){
@@ -290,12 +280,12 @@ class _InfoState extends State<Info> {
                                                 },
                                               ),
                                             ),
-                                            SizedBox(width: 10,),
+                                            const SizedBox(width: 10,),
                                             Expanded(
                                               flex:2,
                                               child: TextField(
                                                 keyboardType: TextInputType.number,
-                                                decoration: InputDecoration(
+                                                decoration: const InputDecoration(
                                                   labelText: "Monto"
                                                 ),
                                                 onChanged: (v){
@@ -305,9 +295,9 @@ class _InfoState extends State<Info> {
                                             ),
                                           ]
                                         )
-                                        :SizedBox(),
+                                        :const SizedBox(),
                                         FloatingActionButton(
-                                          child:Icon(Icons.add),
+                                          child:const Icon(Icons.add),
                                           onPressed: ()=>GastoSeleccionado.value = -2,
                                         )
                                       ],
@@ -316,12 +306,13 @@ class _InfoState extends State<Info> {
                                 )
                               ),
                               child: Card(
+                                color:const Color.fromRGBO(186, 255, 201, 1),
                                 child: Column(
                                    mainAxisSize:MainAxisSize.min,
                                    mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("Ingresos"),
-                                    Text(c.Meses.where((v)=>v.NMes==mes.value).first.GetIngresos().toString()+"€")
+                                    const Text("Ingresos"),
+                                    Text("${c.Meses.where((v)=>v.NMes==mes.value).first.GetIngresos()}€")
                                   ],
                                 ),
                               ),
@@ -331,12 +322,13 @@ class _InfoState extends State<Info> {
                             flex:5,
                             child: InkWell(
                               child: Card(
+                                color: const Color.fromRGBO(255,179,186,1),
                                 child: Column(
                                   mainAxisSize:MainAxisSize.min,
                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("Gastos"),
-                                    Text(c.Meses.where((v)=>v.NMes==mes.value).first.GetGastos().toString()+"€")
+                                    const Text("Gastos"),
+                                    Text("${c.Meses.where((v)=>v.NMes==mes.value).first.GetGastos()}€")
                                   ],
                                 ),
                               ),
@@ -359,18 +351,18 @@ class _InfoState extends State<Info> {
                                               children:[
                                                 Expanded(
                                                   child: IconButton(
-                                                    icon: Icon(Icons.check),
+                                                    icon: const Icon(Icons.check),
                                                     onPressed: ()=>setState(() {
                                                       c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombrenuevo] = valornuevo;
                                                       GastoSeleccionado.value = -1;
                                                     }),
                                                   ),
                                                 ),
-                                                SizedBox(width: 10,),
+                                                const SizedBox(width: 10,),
                                                 Expanded(
                                                   flex:2,
                                                   child: TextField(
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "Nombre"
                                                     ),
                                                     onChanged: (v){
@@ -378,12 +370,12 @@ class _InfoState extends State<Info> {
                                                     },
                                                   ),
                                                 ),
-                                                SizedBox(width: 10,),
+                                                const SizedBox(width: 10,),
                                                 Expanded(
                                                   flex:2,
                                                   child: TextField(
                                                     keyboardType: TextInputType.number,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "Monto"
                                                     ),
                                                     onChanged: (v){
@@ -394,10 +386,10 @@ class _InfoState extends State<Info> {
 
                                               ]
                                             )
-                                            :SizedBox(),
+                                            :const SizedBox(),
                                             FloatingActionButton(
                                               onPressed:()=>GastoSeleccionado.value = -2,
-                                              child: Icon(Icons.add)
+                                              child: const Icon(Icons.add)
                                             ),
                                         ],
                                       ),
@@ -420,26 +412,26 @@ class _InfoState extends State<Info> {
                       height: 100,
                       width: 100,
                     ),
-                    SizedBox(height: 80,),
-                    Text("¿Cuanto se ha ingresado en "+mes.value+"?"),
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 80,),
+                    Text("¿Cuanto se ha ingresado en ${mes.value}?"),
+                    const SizedBox(height: 10,),
                     TextField(
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: "Ingreso para "+mes.value
+                        labelText: "Ingreso para ${mes.value}"
                       ),
                       onChanged: (v){
                         ChangeIngreso(double.parse(v));
                       },
                     ),
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
                     IconButton(
                       onPressed: (){
                         setState(() {
                           Values().cuentas[Values().seleccionado] = c;
                         });
                       },
-                      icon:Icon(Icons.check),
+                      icon:const Icon(Icons.check),
                       color: Colors.green,
                     )
                   ]

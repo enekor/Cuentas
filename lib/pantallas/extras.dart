@@ -1,3 +1,4 @@
+import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'info.dart';
 import 'package:cuentas_android/values.dart';
@@ -12,6 +13,7 @@ class Extras extends StatefulWidget {
 }
 
 class _ExtrasState extends State<Extras> {
+  
   Map<String,double> extras = Values().cuentas[Values().seleccionado].Meses.where((v)=>v.NMes == Values().GetMes()).first.Extras;
   String nuevoNombre = "";
   double nuevoValor = 0;
@@ -49,38 +51,20 @@ class _ExtrasState extends State<Extras> {
       return ret;
     }
 
-    return WillPopScope(
-      onWillPop: ()async{
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder:(context)=>Info())
-        );
-
-        return true;
+    return PopScope(
+      onPopInvoked: (_){
+        debugPrint("hola extra");
       },
-      /*onPopInvoked: (ispop){
-        if(ispop){
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder:(context)=>Info())
-          );
-        }
-      },*/
       child: Obx(()=>Scaffold(
           resizeToAvoidBottomInset:true,
           floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
             onPressed: ()=>nuevo.value = !nuevo.value,
           ),
-          body: Container(
-            decoration: BoxDecoration(
-            image:DecorationImage(
-              image: AssetImage("/assets/images/fondo.jpg"),
-              fit:BoxFit.cover
-            )
-          ),
+          body: CustomPaint(
+            painter: MyPattern(),
             child: Padding(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               child: Column(
                 children: [
                   Column(
@@ -92,14 +76,14 @@ class _ExtrasState extends State<Extras> {
                     children: [
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.check),
+                          icon: const Icon(Icons.check),
                           onPressed: ()=>ChangeExtra(),
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      const SizedBox(width: 10,),
                       Expanded(
                         child: TextField(
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: "Nombre"
                           ),
                           onChanged: (v){
@@ -107,11 +91,11 @@ class _ExtrasState extends State<Extras> {
                           },
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      const SizedBox(width: 10,),
                       Expanded(
                         child: TextField(
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: "Monto"
                           ),
                           onChanged: (v){
@@ -121,7 +105,7 @@ class _ExtrasState extends State<Extras> {
                       )
                     ],
                   )
-                  :SizedBox()
+                  :const SizedBox()
                 ],
               )
             ),

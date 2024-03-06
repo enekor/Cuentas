@@ -14,20 +14,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter App!!',
       theme: ThemeData(
-        colorSchemeSeed: Colors.indigo,
+        primaryColor: Colors.pink[50],
         useMaterial3: true,
         brightness: Brightness.light,
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyMedium: TextStyle(fontSize: 15),
           bodyLarge: TextStyle(fontSize: 20),
           bodySmall: TextStyle(fontSize: 12),
         )
       ),
       darkTheme: ThemeData(
-        colorSchemeSeed: Colors.blue,
+        primaryColor: Colors.purple[100],
         useMaterial3: true,
         brightness: Brightness.dark,
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyMedium: TextStyle(fontSize: 15),
           bodyLarge: TextStyle(fontSize: 20),
           bodySmall: TextStyle(fontSize: 12),
