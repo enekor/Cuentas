@@ -1,3 +1,4 @@
+import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'info.dart';
@@ -28,6 +29,13 @@ class _ExtrasState extends State<Extras> {
         nuevo.value = false;
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached){
+      cuentaDao().almacenarDatos();
+    }
   }
 
   @override
@@ -62,51 +70,53 @@ class _ExtrasState extends State<Extras> {
             onPressed: ()=>nuevo.value = !nuevo.value,
           ),
           body: CustomPaint(
-            painter: MyPattern(),
+            painter: MyPattern(context),
             child: Padding(
               padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Column(
-                    children: GetExtras()
-                  ),
-                  nuevo.value
-                  ?Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: IconButton(
-                          icon: const Icon(Icons.check),
-                          onPressed: ()=>ChangeExtra(),
-                        ),
-                      ),
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: "Nombre"
+              child: SizedBox(
+                child: Column(
+                  children: [
+                    Column(
+                      children: GetExtras()
+                    ),
+                    nuevo.value
+                    ?Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                          child: IconButton(
+                            icon: const Icon(Icons.check),
+                            onPressed: ()=>ChangeExtra(),
                           ),
-                          onChanged: (v){
-                            nuevoNombre = v;
-                          },
                         ),
-                      ),
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: "Monto"
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              labelText: "Nombre"
+                            ),
+                            onChanged: (v){
+                              nuevoNombre = v;
+                            },
                           ),
-                          onChanged: (v){
-                            nuevoValor = double.parse(v);
-                          },
                         ),
-                      )
-                    ],
-                  )
-                  :const SizedBox()
-                ],
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: "Monto"
+                            ),
+                            onChanged: (v){
+                              nuevoValor = double.parse(v);
+                            },
+                          ),
+                        )
+                      ],
+                    )
+                    :const SizedBox()
+                  ],
+                ),
               )
             ),
           )

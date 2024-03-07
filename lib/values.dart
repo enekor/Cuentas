@@ -25,8 +25,8 @@ class Values {
   ];
 
   List<Cuenta> cuentas = [
-    new Cuenta(1,"Nombre",[]),
-    new Cuenta(2,"Nombre2",[])
+    new Cuenta(1,"Eneko",[]),
+    new Cuenta(2,"Karolanne",[])
   ];
 
   int seleccionado = -1;

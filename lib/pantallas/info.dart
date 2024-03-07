@@ -1,3 +1,4 @@
+import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
@@ -120,6 +121,13 @@ class _InfoState extends State<Info>{
     return ret;
   }
 
+@override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached){
+      cuentaDao().almacenarDatos();
+    }
+  }
+  
 //pantalla
   @override
   Widget build(BuildContext context) {
@@ -172,7 +180,7 @@ class _InfoState extends State<Info>{
               :const Text("Inicio de mes"),
           ),
           body: CustomPaint(
-            painter: MyPattern(),
+            painter: MyPattern(context),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Center(

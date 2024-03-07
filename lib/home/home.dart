@@ -1,3 +1,4 @@
+import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/ItemView.dart';
@@ -14,12 +15,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached){
+      cuentaDao().almacenarDatos();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset:true,
       body: 
         CustomPaint(
-          painter: MyPattern(),
+          painter: MyPattern(context),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Center(

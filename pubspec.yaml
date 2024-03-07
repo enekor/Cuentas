@@ -30,7 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get: ^4.5.0
+  get: ^4.6.6
+  firebase_core: ^2.26.0
+  firebase_database: ^10.4.8
+  cloud_firestore: ^4.15.7
 
 dev_dependencies:
   flutter_test:
