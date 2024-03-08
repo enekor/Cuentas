@@ -1,10 +1,10 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
+import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Mes.dart';
-import 'dart:math' as math;
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:get/get.dart';
 import 'package:cuentas_android/pantallas/extras.dart';
@@ -45,24 +45,33 @@ class _InfoState extends State<Info>{
     c.Meses.where((v)=>v.NMes == mes.value).first.Ingreso = valor;
   }
 
+  void GuardarGasto(String nombre, double valor){
+    if (c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.where((v) => v.nombre == nombre).isNotEmpty){
+      c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.add(Gasto(nombre: nombre, valor: valor));
+    }
+    else{
+      c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.where((v) => v.nombre == nombre).first.valor = valor;
+    }
+  }
+
   List<Widget> GetGastos(){
     List<Widget> ret = [];
     int contador = 0;
 
-    c.Meses.where((v)=>v.NMes == mes.value).first.Gastos.forEach((nombre,valor){
-      if(valor>0){
+    c.Meses.where((v)=>v.NMes == mes.value).first.Gastos.forEach((gasto){
+      if(gasto.valor>0){
         ret.add(GastoView(
         (name, value) => setState(() {
-          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombre] = value;
+          GuardarGasto(name, value);
         }),
         (name,value) => setState(() {
-          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.removeWhere((n,v)=>v==value && n==name);
+          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.removeWhere((v)=>v.valor==value && v.nombre==name);
         }),
         (counter) => setState(() {
           GastoSeleccionado.value = counter;
         }),
-        nombre,
-        valor,
+        gasto.nombre,
+        gasto.valor,
         contador
         ));
       }
@@ -97,20 +106,20 @@ class _InfoState extends State<Info>{
     List<Widget> ret = [];
     int contador = 0;
 
-    c.Meses.where((v)=>v.NMes == mes.value).first.Gastos.forEach((nombre,valor){
-      if(valor<0){
+    c.Meses.where((v)=>v.NMes == mes.value).first.Gastos.forEach((gasto){
+      if(gasto.valor<0){
         ret.add(GastoView(
         (name, value) => setState(() {
-          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombre] = value*-1;
+          GuardarGasto(gasto.nombre, value*-1);
         }),
         (name,value) => setState(() {
-          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.removeWhere((n,v)=>v==value*-1 && n==name);
+          c.Meses.where((v)=>v.NMes==mes.value).first.Gastos.removeWhere((g)=>g.valor==value*-1 && g.nombre==name);
         }),
         (counter) => setState(() {
           GastoSeleccionado.value = counter;
         }),
-        nombre,
-        valor*-1,
+        gasto.nombre,
+        gasto.valor*-1,
         contador
         ));
       }
@@ -120,20 +129,13 @@ class _InfoState extends State<Info>{
     contador++;
     return ret;
   }
-
-@override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if(state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached){
-      cuentaDao().almacenarDatos();
-    }
-  }
   
 //pantalla
   @override
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (_) {
-        debugPrint("hola");
+        cuentaDao().almacenarDatos();
       },
       child: Obx(()=> Scaffold(
         resizeToAvoidBottomInset: true,
@@ -271,7 +273,7 @@ class _InfoState extends State<Info>{
                                                 icon:const Icon(Icons.check),
                                                 color: Colors.green,
                                                 onPressed: ()=>setState(() {
-                                                  c.Meses.where((v)=>v.NMes == mes.value).first.Gastos[nombrenuevo] = valornuevo*-1;
+                                                  GuardarGasto(nombrenuevo, valornuevo);
                                                   GastoSeleccionado.value = -1;
                                                 }),
                                               ),
@@ -361,7 +363,7 @@ class _InfoState extends State<Info>{
                                                   child: IconButton(
                                                     icon: const Icon(Icons.check),
                                                     onPressed: ()=>setState(() {
-                                                      c.Meses.where((v)=>v.NMes==mes.value).first.Gastos[nombrenuevo] = valornuevo;
+                                                      GuardarGasto(nombrenuevo, valornuevo);
                                                       GastoSeleccionado.value = -1;
                                                     }),
                                                   ),

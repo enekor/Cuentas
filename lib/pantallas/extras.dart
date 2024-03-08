@@ -1,4 +1,5 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
+import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:flutter/material.dart';
 import 'info.dart';
@@ -15,26 +16,17 @@ class Extras extends StatefulWidget {
 
 class _ExtrasState extends State<Extras> {
   
-  Map<String,double> extras = Values().cuentas[Values().seleccionado].Meses.where((v)=>v.NMes == Values().GetMes()).first.Extras;
+  List<Gasto> extras = Values().cuentas[Values().seleccionado].Meses.where((v)=>v.NMes == Values().GetMes()).first.Extras;
   String nuevoNombre = "";
   double nuevoValor = 0;
   RxBool nuevo = false.obs;
 
-  void ChangeExtra(){
-    setState(() {
-      if(nuevoNombre != "" && nuevoValor >0){
-        extras[nuevoNombre] = nuevoValor;
-        nuevoNombre = "";
-        nuevoValor = 0;
-        nuevo.value = false;
-      }
-    });
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if(state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached){
-      cuentaDao().almacenarDatos();
+  void SaveExtra(String nombre, double valor){
+    if(extras.where((v)=>v.nombre == nuevoNombre).isNotEmpty){
+      extras.where((v)=>v.nombre == nuevoNombre).first.valor = valor;
+    }
+    else{
+      extras.add(Gasto(nombre: nombre, valor: valor));
     }
   }
 
@@ -44,14 +36,16 @@ class _ExtrasState extends State<Extras> {
     List<Widget> GetExtras(){
       List<Widget> ret = [];
 
-      extras.forEach((nombre,valor) {
+      extras.forEach((gasto) {
         
         ret.add(GastoView(
-          (nombre,valor)=>extras[nombre]=valor,
-          (nombre,valor)=>extras.removeWhere((n,v)=>n==nombre && v==valor),
+          (nombre,valor)=>setState(() {
+            SaveExtra(nombre, valor);
+          }),
+          (nombre,valor)=>extras.removeWhere((n)=>n.nombre==nombre && n.valor==valor),
           (_){},
-          nombre,
-          valor,
+          gasto.nombre,
+          gasto.valor,
           1
         ));
       });
@@ -61,7 +55,7 @@ class _ExtrasState extends State<Extras> {
 
     return PopScope(
       onPopInvoked: (_){
-        debugPrint("hola extra");
+        cuentaDao().almacenarDatos();
       },
       child: Obx(()=>Scaffold(
           resizeToAvoidBottomInset:true,
@@ -86,7 +80,7 @@ class _ExtrasState extends State<Extras> {
                         Expanded(
                           child: IconButton(
                             icon: const Icon(Icons.check),
-                            onPressed: ()=>ChangeExtra(),
+                            onPressed: ()=>SaveExtra(nuevoNombre,nuevoValor),
                           ),
                         ),
                         const SizedBox(width: 10,),

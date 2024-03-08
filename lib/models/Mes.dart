@@ -1,39 +1,66 @@
+import 'package:cuentas_android/models/Gasto.dart';
+
 class Mes{
-  Map<String,double> Gastos = {};
+  List<Gasto> Gastos = [];
   double Ingreso = 0;
-  Map<String,double> Extras = {};
+  List<Gasto> Extras = [];
   String NMes;
 
   Mes(this.NMes);
+  Mes.complete({required this.Gastos, required this.Extras, required this.Ingreso, required this.NMes});
+
+  factory Mes.fromJson(Map<String, dynamic> json) => Mes.complete(
+    Gastos: List<Gasto>.from(json["Gastos"].map((x) => Gasto.fromJson(x))),
+    Ingreso: json["Ingreso"],
+    Extras: List<Gasto>.from(json["Extras"].map((x) => Gasto.fromJson(x))),
+    NMes: json["NMes"],
+  );
+
+    Map<String, dynamic> toJson() => {
+        "Gastos": List<dynamic>.from(Gastos.map((x) => x.toJson())),
+        "Ingreso": Ingreso,
+        "Extras": List<dynamic>.from(Extras.map((x) => x.toJson())),
+        "NMes": NMes,
+    };
+
+  double GetExtras(){
+    double ret = 0;
+
+    for(int e = 0;e<Extras.length;e++){
+      ret+=Extras[e].valor;
+    }
+    
+    return ret;
+  }
 
   double GetGastos(){
     double ret = 0;
 
-    for(double g in this.Gastos.values){
-        if(g>0){
-          ret+=g;
-        }
+    for(int g = 0;g<Gastos.length;g++){
+      if(Gastos[g].valor > 0){
+        ret += Gastos[g].valor;
+      }
     }
 
-    for(double e in this.Extras.values){
-      ret+=e;
-    }
+    ret += GetExtras();
 
     return ret;
   }
 
-  double GetExtras(){
+  double GetIngresosExtra(){
     double ret = 0;
-    for (double extra in Extras.values){
-      ret+= extra;
+
+    for(int g = 0;g<Gastos.length;g++){
+      if(Gastos[g].valor < 0){
+        ret += Gastos[g].valor;
+      }
     }
 
     return ret;
   }
 
   double GetIngresos(){
-    double extras = -1*(Gastos.values.where((v)=>v<0).fold(0, (previousValue, value) => previousValue + value));
-    return this.Ingreso+extras;
+    return Ingreso+GetIngresosExtra();
   }
 
   double GetAhorros(){

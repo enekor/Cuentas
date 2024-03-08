@@ -11,7 +11,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  cuentaDao().almacenarDatos();
   cuentaDao().obtenerDatos();
 
   runApp(const MyApp());

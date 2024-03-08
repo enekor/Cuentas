@@ -1,3 +1,6 @@
+import 'package:cuentas_android/models/Gasto.dart';
+import 'package:cuentas_android/models/Mes.dart';
+
 import 'models/Cuenta.dart';
 import 'package:get/get.dart';
 
@@ -25,8 +28,43 @@ class Values {
   ];
 
   List<Cuenta> cuentas = [
-    new Cuenta(1,"Eneko",[]),
-    new Cuenta(2,"Karolanne",[])
+    Cuenta(
+      id:1,
+      Nombre: "Eneko",
+      Meses: [
+        Mes.complete(
+          Gastos: 
+          [
+            Gasto(nombre: "nombre", valor: 1)
+          ], 
+          Extras: 
+          [
+            Gasto(nombre: "nombre", valor: 1)
+          ], 
+          Ingreso: 1, 
+          NMes: "Enero"
+        )
+      ]
+    ),
+    Cuenta(
+      id:2,
+      Nombre: "Karolanne",
+      Meses: [
+        Mes.complete(
+          Gastos: 
+          [
+            Gasto(nombre: "nombre", valor: 1)
+          ], 
+          Extras: 
+          [
+            Gasto(nombre: "nombre", valor: 1)
+          ], 
+          Ingreso: 1, 
+          NMes: "Enero"
+        )
+      ]
+    ),
+
   ];
 
   int seleccionado = -1;

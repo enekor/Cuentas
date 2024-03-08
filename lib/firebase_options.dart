@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
     authDomain: 'fcuentas-3e40c.firebaseapp.com',
     storageBucket: 'fcuentas-3e40c.appspot.com',
     measurementId: 'G-BKG0F9MT9G',
-    databaseURL: 'https://fcuentas-3e40c-default-rtdb.europe-west1.firebasedatabase.app'
+    //databaseURL: 'https://fcuentas-3e40c-default-rtdb.europe-west1.firebasedatabase.app'
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -68,6 +68,6 @@ class DefaultFirebaseOptions {
     authDomain: 'fcuentas-3e40c.firebaseapp.com',
     storageBucket: 'fcuentas-3e40c.appspot.com',
     measurementId: 'G-BKG0F9MT9G',
-    databaseURL: 'https://fcuentas-3e40c-default-rtdb.europe-west1.firebasedatabase.app'
+    //databaseURL: 'https://fcuentas-3e40c-default-rtdb.europe-west1.firebasedatabase.app'
   );
 }
