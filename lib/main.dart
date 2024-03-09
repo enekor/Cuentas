@@ -10,23 +10,27 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  cuentaDao().obtenerDatos();
-
+  await cuentaDao().obtenerDatos();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Flutter App!!',
       theme: MyLightTheme,
       darkTheme: MyDarkTheme,
-      home: const Scaffold(body: Home()),
+      home: Scaffold(body: FutureBuilder(
+        future:cuentaDao().obtenerDatos(),
+        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
+          ? const Home()
+          : CircularProgressIndicator(color: Theme.of(context).primaryColor,),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

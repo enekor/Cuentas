@@ -6,17 +6,19 @@ class cuentaDao{
 
   CollectionReference ref = FirebaseFirestore.instance.collection('cuenta');
 
-  void obtenerDatos() async {
+  Future obtenerDatos() async {
     final snapshot = await ref.get();
     Values().cuentas = snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
+  }
+  Future<List<Cuenta>> getDatos() async {
+    final snapshot = await ref.get();
+    return snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
   }
 
 
 
-  void almacenarDatos() async {
-    for(Cuenta c in Values().cuentas){
-      ref.doc(c.id.toString()).update(c.toJson());
-    }
+  Future almacenarDatos(Cuenta c) async {
+    await ref.doc(c.id.toString()).update(c.toJson());
   }
 
 }

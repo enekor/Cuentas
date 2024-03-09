@@ -1,3 +1,4 @@
+import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/models/Mes.dart';
 
@@ -27,45 +28,7 @@ class Values {
     'Diciembre',
   ];
 
-  List<Cuenta> cuentas = [
-    Cuenta(
-      id:1,
-      Nombre: "Eneko",
-      Meses: [
-        Mes.complete(
-          Gastos: 
-          [
-            Gasto(nombre: "nombre", valor: 1)
-          ], 
-          Extras: 
-          [
-            Gasto(nombre: "nombre", valor: 1)
-          ], 
-          Ingreso: 1, 
-          NMes: "Enero"
-        )
-      ]
-    ),
-    Cuenta(
-      id:2,
-      Nombre: "Karolanne",
-      Meses: [
-        Mes.complete(
-          Gastos: 
-          [
-            Gasto(nombre: "nombre", valor: 1)
-          ], 
-          Extras: 
-          [
-            Gasto(nombre: "nombre", valor: 1)
-          ], 
-          Ingreso: 1, 
-          NMes: "Enero"
-        )
-      ]
-    ),
-
-  ];
+  List<Cuenta> cuentas = [];
 
   int seleccionado = -1;
   RxInt mes = new RxInt(DateTime.now().month-1);

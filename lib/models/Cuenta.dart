@@ -21,19 +21,19 @@ class Cuenta{
         "Meses": List<dynamic>.from(Meses.map((x) => x.toJson())),
     };
 
-  double GetGastosTotales(){
+  double GetGastosTotales(int anno){
     double ret = 0;
-    for(Mes mes in Meses){
+    for(Mes mes in Meses.where((v)=>v.Anno == anno)){
       ret+=mes.GetGastos();
     }
 
     return ret;
   }
 
-  double GetTotal(){
+  double GetTotal(int anno){
     double ret = 0;
 
-    for(Mes mes in Meses){
+    for(Mes mes in Meses.where((v)=>v.Anno == anno)){
       ret+=mes.GetAhorros();
     }
 

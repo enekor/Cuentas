@@ -31,31 +31,44 @@ class _ExtrasState extends State<Extras> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    cuentaDao().obtenerDatos();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     List<Widget> GetExtras(){
       List<Widget> ret = [];
 
-      extras.forEach((gasto) {
-        
-        ret.add(GastoView(
-          (nombre,valor)=>setState(() {
-            SaveExtra(nombre, valor);
-          }),
-          (nombre,valor)=>extras.removeWhere((n)=>n.nombre==nombre && n.valor==valor),
-          (_){},
-          gasto.nombre,
-          gasto.valor,
-          1
-        ));
-      });
+      if(extras.isNotEmpty){
+        extras.forEach((gasto) {
+
+          ret.add(GastoView(
+                  (nombre,valor)=>setState(() {
+                SaveExtra(nombre, valor);
+              }),
+                  (nombre,valor)=>extras.removeWhere((n)=>n.nombre==nombre && n.valor==valor),
+                  (_){},
+              gasto.nombre,
+              gasto.valor,
+              1
+          ));
+        });
+      }
+      else{
+        ret.add(Image.asset("assets/images/gatook.png"));
+        ret.add(const Text("Parece que no tienes extras, bien hecho"));
+      }
+
 
       return ret;
     }
 
     return PopScope(
-      onPopInvoked: (_){
-        cuentaDao().almacenarDatos();
+      onPopInvoked: (_) async{
+        await cuentaDao().almacenarDatos(Values().cuentas[Values().seleccionado]);
       },
       child: Obx(()=>Scaffold(
           resizeToAvoidBottomInset:true,
