@@ -4,6 +4,7 @@ import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/ItemView.dart';
 import 'package:cuentas_android/pantallas/info.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:get/get.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -28,8 +29,7 @@ class _HomeState extends State<Home> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
-            child: Column(children:[
-              Row(
+            child:Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: Values()
@@ -38,13 +38,11 @@ class _HomeState extends State<Home> {
                       onTap: () {
                         Values().seleccionar(cuenta.id);
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const Info()));
+                            builder: (context) => const Info())).then((value) => setState(() {}));
                       },
                       child: ItemCard(cuenta.Nombre,
                           cuenta.GetTotal(DateTime.now().year))))
                   .toList()
-            ),
-            ]
             ),
           ),
         ),

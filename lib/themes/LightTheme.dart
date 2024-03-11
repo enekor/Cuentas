@@ -7,10 +7,12 @@ class AppColorsL{
   static const Color secondaryColor3 = Color.fromRGBO(173, 136, 198, 1);
   static const Color secondaryColor4 = Color.fromRGBO(116, 105, 182, 1);
   static const Color secondaryColor5 = Color.fromRGBO(190, 173, 250, 1);
+  static const Color okButtonColor = Color.fromRGBO(119, 221, 119,1);
+  static const Color errorButtonColor = Color.fromRGBO(255, 105, 97,1);
   static const Color textColor = Colors.black87;
 }
 
-ThemeData MyDarkTheme = ThemeData(
+ThemeData MyLightTheme = ThemeData(
   primaryColor: AppColorsL.primaryColor,
   useMaterial3: true,
   brightness: Brightness.light,

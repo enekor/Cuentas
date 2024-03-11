@@ -1,6 +1,8 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:cuentas_android/themes/DarkTheme.dart';
+import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
@@ -27,6 +29,7 @@ class _InfoState extends State<Info> {
   double valornuevo = 0;
   RxBool mostrarGastos = false.obs;
   RxBool ingresoEditar = false.obs;
+  double nuevoIngreso = -1;
 
   @override
   void initState(){
@@ -37,18 +40,14 @@ class _InfoState extends State<Info> {
 //metodos
   bool HayDatos() {
     bool exists = c.Meses.where((v) => v.NMes == mes.value).isNotEmpty;
-    if (!exists) {
-      c.Meses.add(Mes(mes.value,anno.value));
-      return false;
-    } else {
-      return true;
-    }
+    return exists;
   }
 
-  void ChangeIngreso(double valor) {
-    setState(() {
-      c.Meses.where((v) => v.NMes == mes.value).first.Ingreso = valor;
-    });
+  void CrearMes() {
+    if(c.Meses.where((v) => v.NMes == mes.value).isEmpty){
+      c.Meses.add(Mes(mes.value,anno.value));
+    }
+      c.Meses.where((v) => v.NMes == mes.value).first.Ingreso = nuevoIngreso;
   }
 
   void GuardarGasto(String nombre, double valor) {
@@ -94,7 +93,9 @@ class _InfoState extends State<Info> {
         onTap: () async {
           await cuentaDao().almacenarDatos(c);
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) =>const Extras()));
+            context, MaterialPageRoute(builder: (context) =>const Extras())).then((value) => setState(() {
+              c = Values().cuentas[Values().seleccionado];
+          }));
         },
         child: Center(
           child: Row(
@@ -149,6 +150,7 @@ class _InfoState extends State<Info> {
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvoked: (_) async {
+          Values().cuentas[Values().seleccionado] = c;
           await cuentaDao().almacenarDatos(c);
         },
         child: Obx(
@@ -259,7 +261,7 @@ class _InfoState extends State<Info> {
                                                                       onChanged:(v) {
                                                                         setState(
                                                                           () {
-                                                                            ChangeIngreso(double.parse(v));
+                                                                            c.Meses.where((cuenta) => cuenta.NMes == mes.value).first.Ingreso = double.parse(v);
                                                                           }
                                                                         );
                                                                       },
@@ -357,8 +359,9 @@ class _InfoState extends State<Info> {
                                                   ),
                                                 )),
                                         child: Card(
-                                          color: const Color.fromRGBO(
-                                              186, 255, 201, 1),
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                            ?AppColorsD.okButtonColor
+                                            :AppColorsL.okButtonColor,
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment:
@@ -376,8 +379,9 @@ class _InfoState extends State<Info> {
                                         flex: 5,
                                         child: InkWell(
                                           child: Card(
-                                            color: const Color.fromRGBO(
-                                                255, 179, 186, 1),
+                                            color: Theme.of(context).brightness == Brightness.dark
+                                              ? AppColorsD.errorButtonColor
+                                              :AppColorsL.errorButtonColor,
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
@@ -505,21 +509,20 @@ class _InfoState extends State<Info> {
                                   decoration: InputDecoration(
                                       labelText: "Ingreso para ${mes.value}"),
                                   onChanged: (v) {
-                                    ChangeIngreso(double.parse(v));
+                                    nuevoIngreso = double.parse(v);
                                   },
                                 ),
                                 const SizedBox(
                                   height: 10,
                                 ),
                                 IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      Values().cuentas[Values().seleccionado] =
-                                          c;
-                                    });
-                                  },
+                                  onPressed: () =>setState(() {
+                                    CrearMes();
+                                  }),
                                   icon: const Icon(Icons.check),
-                                  color: Colors.green,
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                    ? AppColorsD.okButtonColor
+                                    : AppColorsL.okButtonColor
                                 )
                               ]),
                   ),

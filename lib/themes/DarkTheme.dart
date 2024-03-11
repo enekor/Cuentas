@@ -7,10 +7,12 @@ class AppColorsD{
   static const Color secondaryColor3 =  Color.fromARGB(255, 149, 94, 185);
   static const Color secondaryColor4 =  Color.fromARGB(255, 100, 85, 180);
   static const Color secondaryColor5 =  Color.fromARGB(255, 149, 123, 245);
+  static const Color okButtonColor = Color.fromRGBO(29, 115, 29,1);
+  static const Color errorButtonColor = Color.fromRGBO(	225, 11, 0,1);
   static const Color textColor = Colors.white70;
 }
 
-ThemeData MyLightTheme = ThemeData(
+ThemeData MyDarkTheme = ThemeData(
   primaryColor: AppColorsD.primaryColor,
   useMaterial3: true,
   brightness: Brightness.dark,

@@ -7,12 +7,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  // 1. Initialize WidgetsFlutterBinding
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 3. Access Firebase features (including cuentaDao)
   await cuentaDao().obtenerDatos();
+
+  // 4. Run the app
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,12 +33,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter App!!',
       theme: MyLightTheme,
       darkTheme: MyDarkTheme,
-      home: Scaffold(body: FutureBuilder(
-        future:cuentaDao().obtenerDatos(),
-        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
-          ? const Home()
-          : CircularProgressIndicator(color: Theme.of(context).primaryColor,),
-        ),
+      home: const Scaffold(
+          body:  Home()
       ),
       debugShowCheckedModeBanner: false,
     );

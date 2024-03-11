@@ -17,7 +17,7 @@ class Mes {
 
   factory Mes.fromJson(Map<String, dynamic> json) => Mes.complete(
         Gastos: List<Gasto>.from(json["Gastos"].map((x) => Gasto.fromJson(x))),
-        Ingreso: json["Ingreso"],
+        Ingreso: json["Ingreso"].toDouble(),
         Extras: List<Gasto>.from(json["Extras"].map((x) => Gasto.fromJson(x))),
         NMes: json["NMes"],
         Anno: json['Anno']
