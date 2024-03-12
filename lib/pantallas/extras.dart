@@ -1,23 +1,30 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
+import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:cuentas_android/pattern/positions.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:get/get.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
 
 class Extras extends StatefulWidget {
-  const Extras({Key? key}) : super(key: key);
+  Cuenta cuenta;
+  Extras({Key? key,required this.cuenta}) : super(key: key);
 
   @override
-  _ExtrasState createState() => _ExtrasState();
+  _ExtrasState createState() => _ExtrasState(cuenta);
 }
 
 class _ExtrasState extends State<Extras> {
-  List<Gasto> extras = Values().cuentas[Values().seleccionado].Meses.where((v) => v.NMes == Values().GetMes()).first.Extras;
+
+  late Cuenta c;
+  List<Gasto> extras = [];
   String nuevoNombre = "";
   double nuevoValor = 0;
   RxBool nuevo = false.obs;
+
+  _ExtrasState(this.c);
 
   void SaveExtra(String nombre, double valor) {
     if (extras.where((v) => v.nombre == nuevoNombre).isNotEmpty) {
@@ -31,13 +38,13 @@ class _ExtrasState extends State<Extras> {
   }
 
   void saveExtras() {
-     Values().cuentas[Values().seleccionado].Meses.where((element) => element.NMes == Values().GetMes()).first.Extras = extras;
+     c.Meses.where((element) => element.NMes == Values().GetMes() && element.Anno == Values().anno.value).first.Extras = extras;
   }
 
   @override
   void initState() {
     super.initState();
-    cuentaDao().obtenerDatos();
+    extras = c.Meses.where((v) => v.NMes == Values().GetMes() && v.Anno == Values().anno.value).first.Extras;
   }
 
   @override
@@ -82,8 +89,10 @@ class _ExtrasState extends State<Extras> {
 
     return PopScope(
       onPopInvoked: (_) async {
+        positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
         saveExtras();
-        await cuentaDao().almacenarDatos(Values().cuentas[Values().seleccionado]);
+        await cuentaDao().almacenarDatos(c);
+        Values().cuentaRet = c;
       },
       child: Obx(
         () => Scaffold(

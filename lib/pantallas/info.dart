@@ -1,6 +1,7 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
 import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:flutter/material.dart';
@@ -14,45 +15,41 @@ import 'package:cuentas_android/pantallas/extras.dart';
 RxInt GastoSeleccionado = new RxInt(-1);
 
 class Info extends StatefulWidget {
-  const Info({Key? key}) : super(key: key);
+  Cuenta c;
+  Info({Key? key, required this.c}) : super(key: key);
 
   @override
-  _InfoState createState() => _InfoState();
+  _InfoState createState() => _InfoState(c);
 
 }
 
 class _InfoState extends State<Info> {
   RxString mes = Values().GetMes().obs;
-  RxInt anno = RxInt(DateTime.now().year);
-  Cuenta c = Values().cuentas[Values().seleccionado];
+  late Cuenta c;
   String nombrenuevo = "Gasto";
   double valornuevo = 0;
   RxBool mostrarGastos = false.obs;
   RxBool ingresoEditar = false.obs;
   double nuevoIngreso = -1;
 
-  @override
-  void initState(){
-    super.initState();
-    cuentaDao().obtenerDatos();
-  }
+  _InfoState(this.c);
 
 //metodos
   bool HayDatos() {
-    bool exists = c.Meses.where((v) => v.NMes == mes.value).isNotEmpty;
+    bool exists = c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).isNotEmpty;
     return exists;
   }
 
   void CrearMes() {
-    if(c.Meses.where((v) => v.NMes == mes.value).isEmpty){
-      c.Meses.add(Mes(mes.value,anno.value));
+    if(c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).isEmpty){
+      c.Meses.add(Mes(mes.value,Values().anno.value));
     }
-      c.Meses.where((v) => v.NMes == mes.value).first.Ingreso = nuevoIngreso;
+      c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Ingreso = nuevoIngreso;
   }
 
   void GuardarGasto(String nombre, double valor) {
     setState(() {
-      var gastos = c.Meses.where((v) => v.NMes == mes.value).first.Gastos;
+      var gastos = c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Gastos;
       if (gastos.where((v) => v.nombre == nombre).isNotEmpty) {
         gastos.where((v) => v.nombre == nombre).first.valor = valor;
       } else {
@@ -65,14 +62,14 @@ class _InfoState extends State<Info> {
     List<Widget> ret = [];
     int contador = 0;
 
-    c.Meses.where((v) => v.NMes == mes.value).first.Gastos.forEach((gasto) {
+    c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
       if (gasto.valor > 0) {
         ret.add(GastoView(
             (name, value) => setState(() {
                   GuardarGasto(name, value);
                 }),
             (name, value) => setState(() {
-                  c.Meses.where((v) => v.NMes == mes.value)
+                  c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value)
                       .first
                       .Gastos
                       .removeWhere((v) => v.valor == value && v.nombre == name);
@@ -92,10 +89,9 @@ class _InfoState extends State<Info> {
       child: InkWell(
         onTap: () async {
           await cuentaDao().almacenarDatos(c);
+          positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) =>const Extras())).then((value) => setState(() {
-              c = Values().cuentas[Values().seleccionado];
-          }));
+            context, MaterialPageRoute(builder: (context) => Extras(cuenta: c,))).then((value) => setState(()=>c = Values().cuentaRet!));
         },
         child: Center(
           child: Row(
@@ -103,7 +99,7 @@ class _InfoState extends State<Info> {
             children: [
               const Text("Extras"),
               Text(
-                  "${c.Meses.where((v) => v.NMes == mes.value).first.GetExtras()}€")
+                  "${c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetExtras()}€")
             ],
           ),
         ),
@@ -118,14 +114,14 @@ class _InfoState extends State<Info> {
     List<Widget> ret = [];
     int contador = 0;
 
-    c.Meses.where((v) => v.NMes == mes.value).first.Gastos.forEach((gasto) {
+    c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
       if (gasto.valor < 0) {
         ret.add(GastoView(
             (name, value) => setState(() {
                   GuardarGasto(gasto.nombre, value * -1);
                 }),
             (name, value) => setState(() {
-                  c.Meses.where((v) => v.NMes == mes.value)
+                  c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value)
                       .first
                       .Gastos
                       .removeWhere(
@@ -150,8 +146,9 @@ class _InfoState extends State<Info> {
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvoked: (_) async {
-          Values().cuentas[Values().seleccionado] = c;
+          positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
           await cuentaDao().almacenarDatos(c);
+          Values().cuentaRet = c;
         },
         child: Obx(
           () => Scaffold(
@@ -160,7 +157,7 @@ class _InfoState extends State<Info> {
                 centerTitle: false,
                 backgroundColor: Theme.of(context).primaryColor,
                 elevation: 0.0,
-                title: c.Meses.where((v) => v.NMes == mes.value).isNotEmpty
+                title: c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).isNotEmpty
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -176,7 +173,7 @@ class _InfoState extends State<Info> {
                                 children: [
                                   Text(mes.value),
                                   Text(
-                                      "${c.Meses.where((v) => v.NMes == mes.value).first.GetAhorros()}€")
+                                      "${c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetAhorros()}€")
                                 ],
                               )),
                             ),
@@ -192,7 +189,7 @@ class _InfoState extends State<Info> {
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                     Text(c.Nombre),
-                                    Text("${c.GetTotal(anno.value)}€")
+                                    Text("${c.GetTotal(Values().anno.value)}€")
                                   ])),
                             ),
                           )
@@ -261,7 +258,7 @@ class _InfoState extends State<Info> {
                                                                       onChanged:(v) {
                                                                         setState(
                                                                           () {
-                                                                            c.Meses.where((cuenta) => cuenta.NMes == mes.value).first.Ingreso = double.parse(v);
+                                                                            c.Meses.where((cuenta) => cuenta.NMes == mes.value && cuenta.Anno == Values().anno.value).first.Ingreso = double.parse(v);
                                                                           }
                                                                         );
                                                                       },
@@ -279,7 +276,7 @@ class _InfoState extends State<Info> {
                                                                   mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                                                                   children: [
                                                                     const Text("Ingresos"),
-                                                                    Text(c.Meses.where((v) =>v.NMes ==mes.value).first.Ingreso.toString()),
+                                                                    Text(c.Meses.where((v) =>v.NMes ==mes.value && v.Anno == Values().anno.value).first.Ingreso.toString()),
                                                                   ],
                                                                 ),
                                                               ),
@@ -369,7 +366,7 @@ class _InfoState extends State<Info> {
                                             children: [
                                               const Text("Ingresos"),
                                               Text(
-                                                  "${c.Meses.where((v) => v.NMes == mes.value).first.GetIngresos()}€")
+                                                  "${c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetIngresos()}€")
                                             ],
                                           ),
                                         ),
@@ -389,7 +386,7 @@ class _InfoState extends State<Info> {
                                               children: [
                                                 const Text("Gastos"),
                                                 Text(
-                                                    "${c.Meses.where((v) => v.NMes == mes.value).first.GetGastos()}€")
+                                                    "${c.Meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetGastos()}€")
                                               ],
                                             ),
                                           ),

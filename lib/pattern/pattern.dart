@@ -1,3 +1,4 @@
+import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
 import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:flutter/material.dart';
@@ -19,16 +20,16 @@ class MyPattern extends CustomPainter {
 
     //circulo
     paint.color = claro?AppColorsL.secondaryColor1:AppColorsD.secondaryColor1;
-    canvas.drawCircle(Offset(random.nextDouble()*size.width, random.nextDouble()*size.height), 100, paint);
+    canvas.drawCircle(positions().posiciones[0], 100, paint);
 
     paint.color = claro?AppColorsL.secondaryColor2:AppColorsD.secondaryColor2;
-    canvas.drawCircle(Offset(random.nextDouble()*size.width, random.nextDouble()*size.height), 75, paint);
+    canvas.drawCircle(positions().posiciones[1], 75, paint);
 
     paint.color = claro?AppColorsL.secondaryColor3:AppColorsD.secondaryColor3;
-    canvas.drawCircle(Offset(random.nextDouble()*size.width, random.nextDouble()*size.height), 50, paint);
+    canvas.drawCircle(positions().posiciones[2], 50, paint);
 
     paint.color = claro?AppColorsL.secondaryColor4:AppColorsD.secondaryColor4;
-    canvas.drawCircle(Offset(random.nextDouble()*size.width, random.nextDouble()*size.height), 40, paint);
+    canvas.drawCircle(positions().posiciones[3], 40, paint);
 
     paint.color = claro?AppColorsL.secondaryColor5:AppColorsD.secondaryColor5;
 
@@ -48,3 +49,4 @@ class MyPattern extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
+
