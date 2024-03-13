@@ -110,7 +110,7 @@ class _HomeState extends State<Home> {
               ),
               IconButton(
                 onPressed: () async{
-                  cuentas.add(await cuentaDao().crearNuevaCuenta(nuevoNombre));
+                  cuentas.add(await cuentaDao().crearNuevaCuenta(nuevoNombre,cuentas.length+1));
                   setState(() {
                     vuelto = true;
                   });

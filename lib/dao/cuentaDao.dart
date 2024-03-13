@@ -49,16 +49,16 @@ class cuentaDao{
     }
   }
 
-  Future<Cuenta> crearNuevaCuenta(String nombre) async{
-    var anteriores = await getDatos();
+  Future<Cuenta> crearNuevaCuenta(String nombre,int posicion) async{
+    String documento = "${user!.uid}-$posicion";
     Cuenta c = Cuenta(
       Meses: [],
       Nombre: nombre,
       id: user!.uid,
-      posicion: anteriores.length+1,
+      posicion: posicion,
     );
 
-    await ref.doc("${c.id}-${c.posicion}").set(c.toJson());
+    await ref.doc(documento).set(c.toJson());
 
     return c;
   }
