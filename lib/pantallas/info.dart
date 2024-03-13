@@ -239,12 +239,11 @@ class _InfoState extends State<Info> {
                                       flex: 5,
                                       child: InkWell(
                                         onTap: () => showModalBottomSheet(
+                                          isScrollControlled: true,
                                             context: context,
                                             builder: (context) => Obx(
                                                   () => Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            10),
+                                                    padding:const EdgeInsets.all(10),
                                                     child: Column(
                                                       children: [
                                                         ingresoEditar.value
@@ -282,74 +281,45 @@ class _InfoState extends State<Info> {
                                                               ),
                                                         Column(
                                                             children:GetIngresos()),
-                                                            GastoSeleccionado
-                                                                    .value ==
-                                                                -2
+                                                            GastoSeleccionado.value ==-2
                                                             ? Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceAround,
+                                                                mainAxisAlignment:MainAxisAlignment.spaceAround,
                                                                 children: [
                                                                     Expanded(
                                                                       child:
                                                                           IconButton(
-                                                                        icon: const Icon(
-                                                                            Icons.check),
-                                                                        color: Colors
-                                                                            .green,
+                                                                        icon: const Icon(Icons.check),
+                                                                        color: Colors.green,
                                                                         onPressed:
-                                                                            () =>
-                                                                                setState(() {
-                                                                          GuardarGasto(
-                                                                              nombrenuevo,
-                                                                              -1*valornuevo);
-                                                                          GastoSeleccionado.value =
-                                                                              -1;
+                                                                            () =>setState(() {
+                                                                          GuardarGasto(nombrenuevo,-1*valornuevo);
+                                                                          GastoSeleccionado.value =-1;
                                                                         }),
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(
-                                                                        width:
-                                                                            10),
+                                                                    const SizedBox( width:10),
                                                                     Expanded(
                                                                       flex: 2,
-                                                                      child:
-                                                                          TextField(
-                                                                        decoration:
-                                                                            const InputDecoration(labelText: "Nombre"),
-                                                                        onChanged:
-                                                                            (v) {
-                                                                          nombrenuevo =
-                                                                              v;
-                                                                        },
+                                                                      child:TextField(
+                                                                        decoration:const InputDecoration(labelText: "Nombre"),
+                                                                        onChanged:(v) =>nombrenuevo =v,
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(
-                                                                      width: 10,
-                                                                    ),
+                                                                    const SizedBox(width: 10,),
                                                                     Expanded(
                                                                       flex: 2,
                                                                       child:
                                                                           TextField(
-                                                                        keyboardType:
-                                                                            TextInputType.number,
-                                                                        decoration:
-                                                                            const InputDecoration(labelText: "Monto"),
-                                                                        onChanged:
-                                                                            (v) {
-                                                                          valornuevo =
-                                                                              double.parse(v);
-                                                                        },
+                                                                        keyboardType:TextInputType.number,
+                                                                        decoration:const InputDecoration(labelText: "Monto"),
+                                                                        onChanged:(v) =>valornuevo =double.parse(v),
                                                                       ),
                                                                     ),
                                                                   ])
                                                             : const SizedBox(),
                                                         FloatingActionButton(
-                                                          child: const Icon(
-                                                              Icons.add),
-                                                          onPressed: () =>
-                                                              GastoSeleccionado
-                                                                  .value = -2,
+                                                          child: const Icon(Icons.add),
+                                                          onPressed: () =>GastoSeleccionado.value = -2,
                                                         )
                                                       ],
                                                     ),
@@ -391,41 +361,29 @@ class _InfoState extends State<Info> {
                                             ),
                                           ),
                                           onTap: () => showModalBottomSheet(
+                                            isScrollControlled: true,
                                             context: context,
                                             builder: (context) => Obx(
                                               () => Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10.0),
+                                                padding:const EdgeInsets.all(10.0),
                                                 child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  mainAxisSize:MainAxisSize.min,
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
+                                                      mainAxisSize:MainAxisSize.min,
+                                                      mainAxisAlignment: MainAxisAlignment.center,
                                                       children: GetGastos(),
                                                     ),
-                                                    GastoSeleccionado.value ==
-                                                            -2
+                                                    GastoSeleccionado.value == -2
                                                         ? Row(children: [
                                                             Expanded(
                                                               child: IconButton(
-                                                                icon: const Icon(
-                                                                    Icons
-                                                                        .check),
-                                                                onPressed: () =>
-                                                                    setState(
-                                                                        () {
-                                                                  GuardarGasto(
-                                                                      nombrenuevo,
-                                                                      valornuevo);
-                                                                  GastoSeleccionado
-                                                                      .value = -1;
+                                                                icon: const Icon(Icons.check),
+                                                                onPressed: () =>setState(() {
+                                                                  GuardarGasto(nombrenuevo,valornuevo);
+                                                                  GastoSeleccionado.value = -1;
                                                                 }),
                                                               ),
                                                             ),
@@ -435,13 +393,9 @@ class _InfoState extends State<Info> {
                                                             Expanded(
                                                               flex: 2,
                                                               child: TextField(
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                        labelText:
-                                                                            "Nombre"),
+                                                                decoration:const InputDecoration(labelText:"Nombre"),
                                                                 onChanged: (v) {
-                                                                  nombrenuevo =
-                                                                      v;
+                                                                  nombrenuevo =v;
                                                                 },
                                                               ),
                                                             ),
@@ -451,29 +405,19 @@ class _InfoState extends State<Info> {
                                                             Expanded(
                                                               flex: 2,
                                                               child: TextField(
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .number,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                        labelText:
-                                                                            "Monto"),
+                                                                keyboardType:TextInputType.number,
+                                                                decoration:const InputDecoration(labelText:"Monto"),
                                                                 onChanged: (v) {
-                                                                  valornuevo =
-                                                                      double
-                                                                          .parse(
-                                                                              v);
+                                                                  valornuevo =double.parse(v);
                                                                 },
                                                               ),
                                                             ),
                                                           ])
                                                         : const SizedBox(),
                                                     FloatingActionButton(
-                                                        onPressed: () =>
-                                                            GastoSeleccionado
-                                                                .value = -2,
-                                                        child: const Icon(
-                                                            Icons.add)),
+                                                      onPressed: () =>GastoSeleccionado.value = -2,
+                                                      child: const Icon(Icons.add)
+                                                    ),
                                                   ],
                                                 ),
                                               ),

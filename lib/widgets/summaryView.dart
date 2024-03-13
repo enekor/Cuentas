@@ -78,54 +78,69 @@ List<Widget> showSummary(List<Mes> meses, BuildContext context){
 }
 Widget showGastos(Mes mes,BuildContext context) => 
   mes.Gastos.where((element) => element.valor>0).isNotEmpty
-  ?Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: mes.Gastos.where((element) => element.valor>0).map<Widget>((e) => 
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(
-            e.nombre,
-            style: TextStyle(
-              fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize
-            ),
-          ),
-          Text("${e.valor}€")
-        ],
-      )
-    ).toList(),
+  ?Card(
+    child: Padding(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: mes.Gastos.where((element) => element.valor>0).map<Widget>((e) => 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                e.nombre,
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize
+                ),
+              ),
+              Text("${e.valor}€")
+            ],
+          )
+        ).toList(),
+      ),
+    ),
   )
   :const Text("No hay");
 
 Widget showExtras(Mes mes) =>
   mes.Extras.isNotEmpty
-  ?Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: mes.Extras.map((e) => 
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(e.nombre),
-          Text("${e.valor}€")
-        ],
-      )  
-    ).toList(),
+  ?Card(
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: mes.Extras.map((e) => 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(e.nombre),
+              Text("${e.valor}€")
+            ],
+          )  
+        ).toList(),
+      ),
+    ),
   )
   :const Text("No hay");
 
 Widget showIngresos(Mes mes) =>
   mes.Gastos.where((element) => element.valor<0).isNotEmpty
-  ?Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: mes.Gastos.where((element) => element.valor<0).map<Widget>((e) => 
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(e.nombre),
-          Text("${-1*e.valor}€")
-        ],
-      )
-    ).toList(),
+  ?Card(
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: mes.Gastos.where((element) => element.valor<0).map<Widget>((e) => 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(e.nombre),
+              Text("${-1*e.valor}€")
+            ],
+          )
+        ).toList(),
+      ),
+    ),
   )
   :const Text("No hay");
 

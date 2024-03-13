@@ -35,6 +35,7 @@ dependencies:
   cloud_firestore: ^4.15.7
   gson: ^0.1.4
   dart_format: ^1.1.17
+  firebase_auth: ^4.17.9
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,12 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
+import 'package:cuentas_android/pantallas/login/widgetTree.dart';
+import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
 import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/home/home.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -33,8 +36,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter App!!',
       theme: MyLightTheme,
       darkTheme: MyDarkTheme,
-      home: const Scaffold(
-          body:  Home()
+      home: Scaffold(
+          body:  Tree()
       ),
       debugShowCheckedModeBanner: false,
     );

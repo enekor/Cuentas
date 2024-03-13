@@ -65,12 +65,3 @@ class Values {
   }
   
 }
-
-class MiProvider extends ChangeNotifier {
-  Cuenta cuenta = Cuenta(id: -1, Nombre: "Nombre", Meses: []);
-
-  void cambiarItem(Cuenta nuevoItem) {
-    cuenta = nuevoItem;
-    notifyListeners();
-  }
-}

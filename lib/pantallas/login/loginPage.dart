@@ -1,0 +1,152 @@
+import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:cuentas_android/dao/userDao.dart';
+
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String? errorMessage = "";
+  bool isLogin = true;
+
+  final TextEditingController _emailCOntroller = TextEditingController();
+  final TextEditingController _passwordCOntroller = TextEditingController();
+  final TextEditingController _repPasswordCOntroller = TextEditingController();
+
+  Future signIn() async{
+    try{
+      await Auth().signInEmailPassword(email: _emailCOntroller.text, password: _passwordCOntroller.text);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Future registerUser() async{
+    
+    if (_passwordCOntroller.text == _repPasswordCOntroller.text) {
+      try{
+        await Auth().registerWithUserPassword(email: _emailCOntroller.text, password: _passwordCOntroller.text);
+      } on FirebaseAuthException catch (e){
+        setState(() {
+          errorMessage = e.message;
+        });
+      }
+    }
+    else{
+      errorMessage = "Las contraseñas no coinciden";
+    }
+  }
+
+  Widget login() => 
+    Center(
+      child: Padding(
+        padding: const EdgeInsets.all(100.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailCOntroller,
+              decoration: const InputDecoration(
+                labelText: "Email"
+              ),
+            ),
+            TextField(
+              controller: _passwordCOntroller,
+              decoration: const InputDecoration(
+                labelText: "Contraseña"
+              ),
+            ),
+            Text(errorMessage!),
+            const SizedBox(height: 50),
+            GestureDetector(
+              onTap: signIn, 
+              child: Card(
+                color: Theme.of(context).primaryColor,
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text("Iniciar sesion"),
+                )
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    
+  Widget register() => 
+    Center(
+      child: Padding(
+        padding: const EdgeInsets.all(100.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailCOntroller,
+              decoration: const InputDecoration(
+                labelText: "Email"
+              ),
+            ),
+            TextField(
+              controller: _passwordCOntroller,
+              decoration: const InputDecoration(
+                labelText: "Contraseña"
+              ),
+            ),
+            TextField(
+              controller: _repPasswordCOntroller,
+              decoration: const InputDecoration(
+                labelText: "Repite la contraseña"
+              ),
+            ),
+            Text(errorMessage!),
+            const SizedBox(height: 50),
+            GestureDetector(
+              onTap: registerUser, 
+              child: Card(
+                color:Theme.of(context).primaryColor,
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text("Registrar"),
+                )
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(isLogin ? "Login" : "Register"),
+            TextButton(
+              onPressed: ()=>setState(() {
+                isLogin = !isLogin;
+              }), 
+              child: Text(isLogin ? "No tengo una cuenta":"Ya tengo una cuenta")
+            )
+          ],
+        )
+      ),
+      body: CustomPaint(
+        painter: MyPattern(context),
+        child: isLogin
+          ?login()
+          :register(),
+      ),
+    );
+  }
+}
