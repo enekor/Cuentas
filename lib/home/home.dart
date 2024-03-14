@@ -1,4 +1,5 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
+import 'package:cuentas_android/dao/userDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
@@ -30,14 +31,16 @@ class _HomeState extends State<Home> {
     if(!vuelto){
       cuentas = await cuentaDao().getDatos();
     }
-
-    int aa = cuentas.length;
     cargado.value = true;
   }
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future logout() async{
+    await Auth().signOut();
   }
 
   Widget selectYear(List<Cuenta> cc)=>
@@ -135,9 +138,20 @@ class _HomeState extends State<Home> {
         child: const Icon(Icons.person_add),
       ),
       appBar: AppBar(
-        title: cargado.value 
-          ? selectYear(cuentas) 
-          : CircularProgressIndicator(color: Theme.of(context).primaryColor,),
+        title: Obx(()=> cargado.value 
+            ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: 
+                [
+                  selectYear(cuentas),
+                  IconButton(
+                    onPressed: logout /*cuentaDao().migrardatos*/, 
+                    icon: const Icon(Icons.logout)
+                  )
+                ]
+              ) 
+            : CircularProgressIndicator(color: Theme.of(context).primaryColor,),
+        ),
         backgroundColor: Colors.transparent,
       ),
         resizeToAvoidBottomInset: true,
@@ -188,8 +202,10 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               )
-              :CircularProgressIndicator(
-                color: Theme.of(context).primaryColor
+              :Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor
+                ),
               )
             ),
           ),

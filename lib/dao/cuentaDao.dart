@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cuentas_android/dao/userDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
-import 'dart:math' as math;
+//import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class cuentaDao{
@@ -34,18 +34,22 @@ class cuentaDao{
       posicion: index+1
     ));
     */
-    Query query = ref.where('uid', isEqualTo: user!.uid);
-    final snapshot = await query.get();
+    final snapshot = await ref.where('id',isEqualTo: user!.uid ).get();
     return snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
   }
 
   Future migrardatos() async{
     var snapshot = await ref.get();
     List<Cuenta> datos = snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
-
+    int contador = 1;
+    
     for(Cuenta c in datos){
+      c.id = user!.uid;
+      c.posicion = contador;
+
       String doc = "${c.id}-${c.posicion}";
       ref.doc(doc).set(c.toJson());
+      contador++;
     }
   }
 

@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future signIn() async{
     try{
-      await Auth().signInEmailPassword(email: _emailCOntroller.text, password: _passwordCOntroller.text);
+      await Auth().signInEmailPassword(email: "${_emailCOntroller.text}@gastoscopio.com", password: _passwordCOntroller.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     
     if (_passwordCOntroller.text == _repPasswordCOntroller.text) {
       try{
-        await Auth().registerWithUserPassword(email: _emailCOntroller.text, password: _passwordCOntroller.text);
+        await Auth().registerWithUserPassword(email: "${_emailCOntroller.text}@gastoscopio.com", password: _passwordCOntroller.text);
       } on FirebaseAuthException catch (e){
         setState(() {
           errorMessage = e.message;
@@ -51,10 +51,14 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              "lib/assets/images/gatohola.png",
+              height: 200,
+              width: 200,),
             TextField(
               controller: _emailCOntroller,
               decoration: const InputDecoration(
-                labelText: "Email"
+                labelText: "Nombre de usuario"
               ),
             ),
             TextField(
@@ -87,10 +91,14 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              "lib/assets/images/gatoapunta.png",
+              height: 200,
+              width: 200,),
             TextField(
               controller: _emailCOntroller,
               decoration: const InputDecoration(
-                labelText: "Email"
+                labelText: "Nombre de usuario"
               ),
             ),
             TextField(
@@ -143,9 +151,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: CustomPaint(
         painter: MyPattern(context),
-        child: isLogin
-          ?login()
-          :register(),
+        child: SingleChildScrollView(
+          child: isLogin
+            ?login()
+            :register(),
+        ),
       ),
     );
   }

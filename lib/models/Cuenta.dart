@@ -11,7 +11,7 @@ class Cuenta{
   Cuenta({required this.id,required this.Nombre,required this.Meses, required this.posicion});
 
   factory Cuenta.fromJson(Map<String, dynamic> json) => Cuenta(
-    id: json["id"],
+    id: json["id"].toString(),
     Nombre: json["Nombre"],
     Meses: List<Mes>.from(json["Meses"].map((x) => Mes.fromJson(x))),
     posicion: json["posicion"]
