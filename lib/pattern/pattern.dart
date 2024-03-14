@@ -34,14 +34,15 @@ class MyPattern extends CustomPainter {
     paint.color = claro?AppColorsL.secondaryColor5:AppColorsD.secondaryColor5;
 
 //ola
-    Path path = Path()..moveTo(0, size.height/2);
-    path.moveTo(0, size.height * 0.7 );
-    path.quadraticBezierTo(size.width * 0.25, size.height * 0.7 ,
-        size.width * 0.5, size.height * 0.8);
-    path.quadraticBezierTo(size.width * 0.75, size.height * 0.9 ,
-        size.width * 1.0, size.height * 0.8);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
+    var sSize = MediaQuery.of(context).size;
+    Path path = Path()..moveTo(0, sSize.height/2);
+    path.moveTo(0, sSize.height * 0.7 );
+    path.quadraticBezierTo(sSize.width * 0.25, sSize.height * 0.7 ,
+        sSize.width * 0.5, sSize.height * 0.8);
+    path.quadraticBezierTo(sSize.width * 0.75, sSize.height * 0.9 ,
+        sSize.width * 1.0, sSize.height * 0.8);
+    path.lineTo(sSize.width, sSize.height);
+    path.lineTo(0, sSize.height);
 
     canvas.drawPath(path, paint);
   }
