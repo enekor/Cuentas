@@ -25,7 +25,7 @@ List<Widget> showSummary(List<Mes> meses, BuildContext context){
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const Text("Ingreso"),
-                    Text("${e.Ingreso}€")
+                    Text("${e.Ingreso.toStringAsFixed(2)}€")
                   ],
                 ),
                 Row(
@@ -93,7 +93,7 @@ Widget showGastos(Mes mes,BuildContext context) =>
                   fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize
                 ),
               ),
-              Text("${e.valor}€")
+              Text("${e.valor.toStringAsFixed(2)}€")
             ],
           )
         ).toList(),
@@ -114,7 +114,7 @@ Widget showExtras(Mes mes) =>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(e.nombre),
-              Text("${e.valor}€")
+              Text("${e.valor.toStringAsFixed(2)}€")
             ],
           )  
         ).toList(),
@@ -135,7 +135,7 @@ Widget showIngresos(Mes mes) =>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(e.nombre),
-              Text("${-1*e.valor}€")
+              Text("${(-1*e.valor).toStringAsFixed(2)}€")
             ],
           )
         ).toList(),

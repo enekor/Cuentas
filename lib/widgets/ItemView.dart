@@ -12,7 +12,7 @@ Widget ItemCard(String nombre,double ahorro) => SizedBox(
               size:50.0
             ),
             Text(nombre),
-            Text("$ahorro€")
+            Text("${ahorro.toStringAsFixed(2)}€")
           ],
         )
     ),

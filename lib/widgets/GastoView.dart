@@ -4,12 +4,13 @@ import 'package:get/get.dart';
 Widget GastoView(
     void Function(String, double) OnSave,
     void Function(String, double) OnDelete,
-    void OnSeleccionar(int),
     String nombre,
     double valor,
     int contador) {
-      RxBool tocado = false.obs;
-      RxBool borrado = false.obs;
+
+  RxBool tocado = false.obs;
+  RxBool borrado = false.obs;
+  
   return Obx(()=>tocado.value
       ? Padding(
         padding: const EdgeInsets.only(top:8,bottom: 8),
@@ -25,14 +26,13 @@ Widget GastoView(
                 flex:5,
                 child: TextField(
                     keyboardType: TextInputType.number,
-                    decoration:
-                        InputDecoration(labelText: "Monto"),
+                    decoration:const InputDecoration(labelText: "Monto"),
                     onChanged: (v) => valor = double.parse(v)),
               ),
               Expanded(
                 flex:1,
                 child: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.check,
                       color: Colors.green,
                     ),
@@ -44,7 +44,7 @@ Widget GastoView(
               Expanded(
                 flex:1,
                 child: IconButton(
-                    icon: Icon(Icons.cancel, color: Colors.red),
+                    icon: const Icon(Icons.cancel, color: Colors.red),
                     onPressed: (){
                       tocado.value = false;
                       borrado.value = true;
@@ -62,21 +62,21 @@ Widget GastoView(
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: borrado == false
+              children: borrado.value == false
               ?[
                 Text(nombre), 
-                Text(valor.toString() + "€")
+                Text("${valor.toStringAsFixed(2)}€")
               ]
               :[
                 Text(
                   nombre,
-                  style:TextStyle(
+                  style:const TextStyle(
                     decoration: TextDecoration.lineThrough,
                     color: Colors.red
                   )
                 ),
                 IconButton(
-                  icon: Icon(Icons.restore),
+                  icon: const Icon(Icons.restore),
                   onPressed: (){
                     OnSave(nombre,valor);
                     borrado.value = false;

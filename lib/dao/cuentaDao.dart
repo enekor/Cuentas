@@ -35,7 +35,8 @@ class cuentaDao{
     ));
     */
     final snapshot = await ref.where('id',isEqualTo: user!.uid ).get();
-    return snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    List<Cuenta> ret = snapshot.docs.map((doc) => Cuenta.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    return ret;
   }
 
   Future migrardatos() async{

@@ -114,7 +114,7 @@ Widget hasData({required BuildContext context,required RxBool seleccionarSummary
                     Navigator.of(context).push(
                       seleccionarSummary.value
                         ?MaterialPageRoute(builder: (context)=> SummaryPage(cuenta: cuenta,))
-                        :MaterialPageRoute(builder: (context) => Info(c:cuenta))
+                        :MaterialPageRoute(builder: (context) => Info(cuenta:cuenta))
                       ).then((value) {
                         vuelto(value);
                         cuenta = Values().cuentaRet!;
