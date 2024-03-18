@@ -80,7 +80,6 @@ class Home extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 seleccionarSummary: seleccionarSummary,
                 vuelto:(value)=>vuelto.value = true
-      
               )
               :Center(
                 child: CircularProgressIndicator(color:Theme.of(context).primaryColor),
