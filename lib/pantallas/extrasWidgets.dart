@@ -3,29 +3,24 @@ import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-List<Widget> GetExtras({required RxList extras, required Function(String,double) onChangeExtra,required Function(String,double) onDeleteExtra,required Function(int) onSelect, required ThemeData theme, required RxInt seleccionado, required Function(String,double) onRestore, required RxList<Gasto> deleted}) {
+List<Widget> GetExtras({required RxList extras, required Function(String,double) onChangeExtra,required Function(String,double) onDeleteExtra,required Function(int) onSelect, required ThemeData theme, required RxList<Gasto> deleted}) {
       List<Widget> ret = [];
 
       if (extras.isNotEmpty) {
         int contador = 1;
         for (var gasto in extras) {
           ret.add(
-            Card(
-              child:gastoView(
-                onChangeExtra,
-                onDeleteExtra,
-                onSelect,
-                gasto.nombre,
-                gasto.valor,
-                contador,
-                theme
-              )
+            gastoView(
+              onChangeExtra,
+              onDeleteExtra,
+              onSelect,
+              gasto.nombre,
+              gasto.valor,
+              contador,
+              theme
             )
           );
-
-          for(Gasto g in deleted){
-            ret.add(deletedView(onRestore, g));
-          }
+          contador++;
         }
       } else {
         ret.add(Center(

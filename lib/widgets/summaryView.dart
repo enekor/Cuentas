@@ -51,7 +51,7 @@ List<Widget> showSummary(List<Mes> meses, BuildContext context){
                       child: Text("Gastos extra")),
                     Expanded(
                       flex: 7,
-                      child: showExtras(e)),
+                      child: showExtras(e,context)),
                   ],
                 ),
                 Row(
@@ -63,7 +63,7 @@ List<Widget> showSummary(List<Mes> meses, BuildContext context){
                       child: Text("Ingresos extra")),
                     Expanded(
                       flex: 7,
-                      child: showIngresos(e)),
+                      child: showIngresos(e,context)),
                   ],
                 ),
               ],
@@ -79,6 +79,7 @@ List<Widget> showSummary(List<Mes> meses, BuildContext context){
 Widget showGastos(Mes mes,BuildContext context) => 
   mes.Gastos.where((element) => element.valor>0).isNotEmpty
   ?Card(
+    color:Theme.of(context).primaryColor,
     child: Padding(
       padding: EdgeInsets.all(8),
       child: Column(
@@ -102,9 +103,10 @@ Widget showGastos(Mes mes,BuildContext context) =>
   )
   :const Text("No hay");
 
-Widget showExtras(Mes mes) =>
+Widget showExtras(Mes mes, BuildContext context) =>
   mes.Extras.isNotEmpty
   ?Card(
+    color:Theme.of(context).primaryColor,
     child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -123,9 +125,10 @@ Widget showExtras(Mes mes) =>
   )
   :const Text("No hay");
 
-Widget showIngresos(Mes mes) =>
+Widget showIngresos(Mes mes, BuildContext context) =>
   mes.Gastos.where((element) => element.valor<0).isNotEmpty
   ?Card(
+    color:Theme.of(context).primaryColor,
     child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

@@ -15,13 +15,14 @@ Widget gastoView(
     ThemeData theme) {
   
   double _nuevoValor = valor;
+  RxBool borrado = false.obs;
   return Obx(()=>Values().gastoSeleccionado.value == contador
     ? Center(
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(10),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(nombre),
               Expanded(
@@ -48,6 +49,7 @@ Widget gastoView(
                 onPressed: () {
                   Values().gastoSeleccionado.value = -1;
                   onDelete(nombre,valor);
+                  borrado.value = true;
                 }, 
                 icon: const Icon(Icons.delete),
                 color: theme.brightness == Brightness.dark
@@ -59,28 +61,30 @@ Widget gastoView(
         )
       ),
     )
-    :Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(nombre),
-              Text("${valor.toStringAsFixed(2)}€"),
-              IconButton(
-                onPressed: () {
-                  Values().gastoSeleccionado.value = -1;
-                  onSelect(contador);
-                }, 
-                icon: const Icon(Icons.edit),
-                color: theme.hintColor,
-              ),
-            ],
+    : borrado.value == false
+      ?Card(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(nombre),
+                Text("${valor.toStringAsFixed(2)}€"),
+                IconButton(
+                  onPressed: () {
+                    Values().gastoSeleccionado.value = -1;
+                    onSelect(contador);
+                  }, 
+                  icon: const Icon(Icons.edit),
+                  color: theme.hintColor,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    )
+      )
+      :deletedView(onSave,Gasto(nombre: nombre, valor: valor))
   );
 }
 
@@ -92,6 +96,7 @@ Widget deletedView(
     child: Padding(
       padding: EdgeInsets.all(10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(gasto.nombre),
           IconButton(

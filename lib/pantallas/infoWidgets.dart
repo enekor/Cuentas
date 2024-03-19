@@ -5,6 +5,7 @@ import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 List<Widget> GetGastos({required List<Mes> meses, required String mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(int) onSelect, required Function onIWTap, required ThemeData theme}) {
     List<Widget> ret = [];
@@ -70,15 +71,6 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     return ret;
   }
 
-  List<Widget> GetBorrados({required List<Gasto> borrados, required void Function(String,double) onRestore}){
-    List<Widget> ret = [];
-    borrados.forEach((element) {
-      ret.add(deletedView(onRestore,element));
-    });
-
-    return ret;
-  }
-
   Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total}){
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +104,7 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     );
   }
 
-  void showIngresoModalSheet({required BuildContext context, required Function(double) onIngresoChange, required List<Mes> meses, required String mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave, required Function(String,double) guardarIngreso, required Function(int) onSelected, required ThemeData theme, required List<Gasto> deleted, required Function(String,double) onRestored}){
+  void showIngresoModalSheet({required BuildContext context, required Function(double) onIngresoChange, required List<Mes> meses, required String mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave, required Function(String,double) guardarIngreso, required Function(int) onSelected, required ThemeData theme, required List<Gasto> deleted}){
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
@@ -120,97 +112,99 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     showModalBottomSheet(
       isScrollControlled: true,
         context: context,
-        builder: (context) => Padding(
-            padding:const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //editar y ver ingreso base
-                ingresoEditar
-                    ? Row(
-                        children: [
-                          const Text("Ingresos"),
-                          Expanded(
-                            child:TextField(
-                              keyboardType:TextInputType.number,
-                              decoration:const InputDecoration(labelText: "Monto"),
-                              onChanged:(v)=>onIngresoChange(double.parse(v))
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.check),
-                            onPressed: () =>ingresoEditar = false,
-                          )
-                        ],
-                      )
-                    : GestureDetector(
-                        onTap: () =>ingresoEditar =true,
-                        child: Row(
-                          mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+        builder: (context) => Obx(()=> Padding(
+              padding:const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //editar y ver ingreso base
+                  ingresoEditar
+                      ? Row(
                           children: [
                             const Text("Ingresos"),
-                            Text(meses.where((v) =>v.NMes ==mes && v.Anno == Values().anno.value).first.Ingreso.toString()),
-                          ],
-                        ),
-                      ),
-                //ver ingresos extra
-                Column(
-                  children:GetIngresos(
-                    meses: meses,
-                    mes: mes,
-                    onDelete: onExtraIngresoDelete,
-                    onSave: (n,v)=>onExtraIngresoSave(n,v),
-                    onSelected: onSelected,
-                    onIWTap: (){},
-                    theme: theme
-                  )),
-                  Column(
-                    children: GetBorrados(borrados: deleted, onRestore: onRestored),
-                  ),
-                  Values().gastoSeleccionado.value ==-2
-                  ? Row(
-                      mainAxisAlignment:MainAxisAlignment.spaceAround,
-                      children: [
-                          Expanded(
-                            child:
-                                IconButton(
+                            Expanded(
+                              child:TextField(
+                                keyboardType:TextInputType.number,
+                                decoration:const InputDecoration(labelText: "Monto"),
+                                onChanged:(v)=>onIngresoChange(double.parse(v))
+                              ),
+                            ),
+                            IconButton(
                               icon: const Icon(Icons.check),
-                              color: Colors.green,
-                              onPressed:
-                                  (){
-                                    guardarIngreso(_nombrenuevo,_valorNuevo);
-                                    Values().gastoSeleccionado.value =-1;
-                                  }
-                                
-                            ),
+                              onPressed: () =>ingresoEditar = false,
+                            )
+                          ],
+                        )
+                      : GestureDetector(
+                          onTap: () =>ingresoEditar =true,
+                          child: Row(
+                            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const Text("Ingresos"),
+                              Text(meses.where((v) =>v.NMes ==mes && v.Anno == Values().anno.value).first.Ingreso.toString()),
+                            ],
                           ),
-                          const SizedBox( width:10),
-                          Expanded(
-                            flex: 2,
-                            child:TextField(
-                              decoration:const InputDecoration(labelText: "Nombre"),
-                              onChanged:(v) =>_nombrenuevo =v,
+                        ),
+                  //ver ingresos extra
+                  Column(
+                    children:GetIngresos(
+                      meses: meses,
+                      mes: mes,
+                      onDelete: (n,v)=>onExtraIngresoDelete(n,v),
+                      onSave: (n,v)=>onExtraIngresoSave(n,v),
+                      onSelected: onSelected,
+                      onIWTap: (){},
+                      theme: theme
+                    )),
+                    Values().gastoSeleccionado.value ==-2
+                    ? Row(
+                        mainAxisAlignment:MainAxisAlignment.spaceAround,
+                        children: [
+                            Expanded(
+                              child:
+                                  IconButton(
+                                icon: const Icon(Icons.check),
+                                color: Colors.green,
+                                onPressed:
+                                    (){
+                                      guardarIngreso(_nombrenuevo,_valorNuevo);
+                                      Values().gastoSeleccionado.value =-1;
+                                    }
+                                  
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child:
-                                TextField(
-                              keyboardType:TextInputType.number,
-                              decoration:const InputDecoration(labelText: "Monto"),
-                              onChanged:(v) =>_valorNuevo =double.parse(v),
+                            const SizedBox( width:10),
+                            Expanded(
+                              flex: 2,
+                              child:TextField(
+                                decoration:const InputDecoration(labelText: "Nombre"),
+                                onChanged:(v) =>_nombrenuevo =v,
+                              ),
                             ),
-                          ),
-                        ])
-                  : const SizedBox(),
-                FloatingActionButton(
-                  child: const Icon(Icons.add),
-                  onPressed: () =>Values().gastoSeleccionado.value = -2,
-                )
-              ],
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child:
+                                  TextField(
+                                keyboardType:TextInputType.number,
+                                decoration:const InputDecoration(labelText: "Monto"),
+                                onChanged:(v) =>_valorNuevo =double.parse(v),
+                              ),
+                            ),
+                          ])
+                    : const SizedBox(),
+                  FloatingActionButton(
+                    child: Values().gastoSeleccionado.value != -2
+                      ? const Icon(Icons.add)
+                      : const Icon(Icons.close),
+                    onPressed: () => Values().gastoSeleccionado.value != -2
+                      ?Values().gastoSeleccionado.value = -2
+                      :Values().gastoSeleccionado.value = -1
+                  )
+                ],
+              ),
             ),
-          ),
+        ),
     );
   }
 
@@ -221,75 +215,82 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      builder: (context) =>Padding(
-          padding:const EdgeInsets.all(10.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisSize:MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: GetGastos(
-                  mes:mes,
-                  meses: meses,
-                  onDelete: onExtraGastoDelete,
-                  onSave: onExtraGastoSave,
-                  onSelect: onSelected,
-                  onIWTap: navigateToExtras,
-                  theme: theme
+      builder: (context) =>Obx(()=> Padding(
+            padding:const EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisSize:MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: GetGastos(
+                    mes:mes,
+                    meses: meses,
+                    onDelete: onExtraGastoDelete,
+                    onSave: onExtraGastoSave,
+                    onSelect: onSelected,
+                    onIWTap: navigateToExtras,
+                    theme: theme
+                  ),
                 ),
-              ),
-              Values().gastoSeleccionado.value == -2
-                ? Row(children: [
-                    Expanded(
-                      child: IconButton(
-                        icon: const Icon(Icons.check),
-                        onPressed: (){
-                          onExtraGastoSave(_nombrenuevo,_valorNuevo);
-                          Values().gastoSeleccionado.value = -1;
-                        }
-
+                Values().gastoSeleccionado.value == -2
+                  ? Row(children: [
+                      Expanded(
+                        child: IconButton(
+                          icon: const Icon(Icons.check),
+                          onPressed: (){
+                            onExtraGastoSave(_nombrenuevo,_valorNuevo);
+                            Values().gastoSeleccionado.value = -1;
+                          }
+        
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        decoration:const InputDecoration(labelText:"Nombre"),
-                        onChanged: (v) => _nombrenuevo = v
+                      const SizedBox(
+                        width: 10,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        keyboardType:TextInputType.number,
-                        decoration:const InputDecoration(labelText:"Monto"),
-                        onChanged: (v) => _valorNuevo = double.parse(v)
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          decoration:const InputDecoration(labelText:"Nombre"),
+                          onChanged: (v) => _nombrenuevo = v
+                        ),
                       ),
-                    ),
-                  ])
-                : const SizedBox(),
-              FloatingActionButton(
-                onPressed: () =>Values().gastoSeleccionado.value = -2,
-                child: const Icon(Icons.add)
-              ),
-            ],
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          keyboardType:TextInputType.number,
+                          decoration:const InputDecoration(labelText:"Monto"),
+                          onChanged: (v) => _valorNuevo = double.parse(v)
+                        ),
+                      ),
+                    ])
+                  : const SizedBox(),
+                FloatingActionButton(
+                  child: Values().gastoSeleccionado.value != -2
+                    ? const Icon(Icons.add)
+                    : const Icon(Icons.close),
+                  onPressed: () => Values().gastoSeleccionado.value != -2
+                    ?Values().gastoSeleccionado.value = -2
+                    :Values().gastoSeleccionado.value = -1
+                )
+              ],
+            ),
           ),
-        ),
+      ),
     );
   }
 
-  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context, required Function(double) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(int) onSelected, required Function(String,double) onRestoreGasto, required List<Gasto> deleted}){
+  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context, required Function(double) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(int) onSelected, required List<Gasto> deleted}){
     
     return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text(Values().gastoSeleccionado.value.toString()),
+          //selector de meses
           Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
             child: DropdownButtonFormField(
@@ -314,6 +315,7 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
               },
             ),
           ),
+          //selector de gastos/ingresos
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -327,13 +329,12 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
                     guardarIngreso: (n,v)=>onExtraSave(n,(-1)*v),
                     mes: mes,
                     meses: meses,
-                    onExtraIngresoDelete: (n,v)=>onExtraDelete(n,(-1)+v),
+                    onExtraIngresoDelete: (n,v)=>onExtraDelete(n,(-1)*v),
                     onExtraIngresoSave: (n,v)=>onExtraSave(n,(-1)*v),
                     onSelected: onSelected,
                     onIngresoChange: (v)=>onIngresoChange(v),
                     theme: theme,
-                    deleted:deleted,
-                    onRestored: onRestoreGasto
+                    deleted:deleted
                   ),
                   child: Card(
                     color: theme.brightness == Brightness.dark

@@ -44,31 +44,17 @@ class Info extends StatelessWidget {
   }
 
   void _deleteGasto(String nombre, double valor){
-    c.value.Meses.where((element) => element.NMes == _mes.value && element.Anno == Values().anno.value).first.Gastos.removeWhere((element) => element.nombre == nombre && element.valor == valor);
-    _toDelete.value.add(Gasto(nombre: nombre, valor: valor));
-  }
-
-  void _restoreGasto(String nombre, double valor){
-    c.value.Meses.where((element) => element.NMes == _mes.value && element.Anno == Values().anno.value).first.Gastos.add(Gasto(nombre: nombre, valor: valor));
-    _toDelete.value.removeWhere((element) => element.nombre == nombre && element.valor == valor);
-  }
-
-  void _deleteDefinitively(){
-    if(_toDelete.isNotEmpty){
-      for(Gasto g in _toDelete.value) {
-        c.value.Meses.where((element) => element.Anno == Values().anno.value && element.NMes == _mes.value).first.Extras.remove(g);
-      }
-    }
+    c.value.Meses.where((element) => element.Anno == Values().anno.value && element.NMes == _mes.value).first.Gastos.removeWhere((v)=>v.nombre == nombre && v.valor == valor);
   }
 
   void _pop(BuildContext context) {
-    _deleteDefinitively();
     positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
     cuentaDao().almacenarDatos(c.value);
     Values().cuentaRet = c.value;
   }
 
   void _navigateExtras(BuildContext context) {
+    Values().gastoSeleccionado.value = -1;
     cuentaDao().almacenarDatos(c.value);
     positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
     Navigator.push(
@@ -116,8 +102,7 @@ class Info extends StatelessWidget {
                           onExtras: () =>  _navigateExtras(context),
                           onIngresoChange: (v)=>_updateIngreso(_mes.value,v),
                           theme: Theme.of(context),
-                          onSelected: (v)=>Values().gastoSeleccionado.value = v, 
-                          onRestoreGasto: (n,v)=>_restoreGasto(n,v),
+                          onSelected: (v)=>Values().gastoSeleccionado.value = v,
                           deleted: _toDelete
                         )
                         : iw.bodyMesNotExists(

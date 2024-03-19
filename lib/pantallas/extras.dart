@@ -17,7 +17,6 @@ class Extras extends StatelessWidget {
   late Rx<Cuenta> c;
   late RxList<Gasto> extras;
   RxBool nuevo = false.obs;
-  RxInt seleccionado = (-1).obs;
 
   String nuevoNombre = "";
   double nuevoValor = 0;
@@ -28,25 +27,19 @@ class Extras extends StatelessWidget {
     nuevo.value = false;
   }
   void _saveExtra(String nombre, double valor) {
+    if(extras.value.where((v) => v.nombre == nombre).isNotEmpty){
       extras.value.where((v) => v.nombre == nombre).first.valor = valor;
-  }
-
-  void _deleteExtra(String nombre, double valor){
-    _toDelete.value.add(Gasto(nombre: nombre, valor: valor));
-  }
-
-  void _restoreExtra(String nombre, double valor){
-    _toDelete.value.removeWhere((element) => element.nombre == nombre && element.valor == valor);
-  }
-
-  void _deleteDefinitively(){
-    for(Gasto g in _toDelete.value){
-      extras.value.remove(g);
+    }
+    else{
+      _createExtra(nombre, valor);
     }
   }
 
+  void _deleteExtra(String nombre, double valor){
+    extras.value.removeWhere((v)=>v.nombre == nombre && v.valor == valor);
+  }
+
   void _pop(BuildContext context) {
-    _deleteDefinitively();
     c.value.Meses.where((element) => element.Anno == Values().anno.value && element.NMes == Values().GetMes()).first.Extras = extras.value;
     positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
     cuentaDao().almacenarDatos(c.value);
@@ -61,9 +54,11 @@ class Extras extends StatelessWidget {
         () => Scaffold(
             resizeToAvoidBottomInset: true,
             floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () => nuevo.value = !nuevo.value,
-            ),
+                    child: nuevo.value == false
+                      ? const Icon(Icons.add)
+                      : const Icon(Icons.close),
+                    onPressed: () => nuevo.value = !nuevo.value
+                  ),
             body: CustomPaint(
               painter: MyPattern(context),
               child: Padding(
@@ -78,10 +73,8 @@ class Extras extends StatelessWidget {
                             extras: extras,
                             onChangeExtra: _saveExtra,
                             onDeleteExtra: _deleteExtra,
-                            onRestore: _restoreExtra,
-                            onSelect: (v)=>seleccionado.value = v,
+                            onSelect: (v)=>Values().gastoSeleccionado.value = v,
                             deleted: _toDelete,
-                            seleccionado: seleccionado,
                             theme: Theme.of(context)
                           )
                         ),
