@@ -9,55 +9,59 @@ import 'package:cuentas_android/home/homeWidgets.dart' as hw;
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
-  RxList<Cuenta> cuentas = RxList([]);
-  RxBool vuelto = false.obs;
-  RxBool cargado = false.obs;
-  RxBool seleccionarSummary = false.obs;
+  RxList<Cuenta> _cuentas = RxList([]);
+  RxBool _vuelto = false.obs;
+  RxBool _cargado = false.obs;
+  RxBool _seleccionarSummary = false.obs;
 
   String nuevoNombre = "";
 
   Future _getCuentas()async{
-    if(!vuelto.value){
-      cuentas.value = await cuentaDao().getDatos();
+    if(!_vuelto.value){
+      _cuentas.value = await cuentaDao().getDatos();
     }
-    cargado.value = true;
+    _cargado.value = true;
   }
 
-  Future logout() async{
+  Future _logout() async{
     await Auth().signOut();
+  }
+
+  Future _createUser()async{
+    var cuenta = await cuentaDao().crearNuevaCuenta(nuevoNombre,_cuentas.length+1);
+    _cuentas.add(cuenta);
+    _vuelto.value = true;
   }
 
 
   @override
   Widget build(BuildContext context) {
     _getCuentas();
-    return Obx(()=>cargado.value
+    return Obx(()=>_cargado.value
       ?Scaffold(
         resizeToAvoidBottomInset: true,
         floatingActionButton: FloatingActionButton(
           onPressed: ()=>hw.nuevoUsuario(
             context: context, 
             onChange: (value) => nuevoNombre = value, 
-            onPressed: () async{
-              cuentas.add(await cuentaDao().crearNuevaCuenta(nuevoNombre,cuentas.length+1));
-              vuelto.value = true;
-            }),
+            onPressed: _createUser
+            ),
           child: const Icon(Icons.person_add),
         ),
         appBar: AppBar(
-          title: Obx(()=> cargado.value 
+          title: Obx(()=> _cargado.value 
               ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: 
                   [
                     hw.selectYear(
-                      cc: cuentas.value, 
+                      cc: _cuentas.value, 
                       width: MediaQuery.of(context).size.width, 
                       theme: Theme.of(context), 
-                      selecSummary: (value) =>seleccionarSummary.value = value
+                      selecSummary: (value) =>_seleccionarSummary.value = value
                     ),
                     IconButton(
-                      onPressed: logout /*cuentaDao().migrardatos*/, 
+                      onPressed: _logout /*cuentaDao().migrardatos*/, 
                       icon: const Icon(Icons.logout)
                     )
                   ]
@@ -75,11 +79,11 @@ class Home extends StatelessWidget {
               builder:(c,s)=> s.connectionState == ConnectionState.done
               ? hw.hasData(
                 context:context,
-                cuentas: cuentas,
+                cuentas: _cuentas,
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                seleccionarSummary: seleccionarSummary,
-                vuelto:(value)=>vuelto.value = true
+                seleccionarSummary: _seleccionarSummary,
+                vuelto:(value)=>_vuelto.value = true
               )
               :Center(
                 child: CircularProgressIndicator(color:Theme.of(context).primaryColor),

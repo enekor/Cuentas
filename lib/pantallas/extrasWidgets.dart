@@ -2,7 +2,7 @@ import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-List<Widget> GetExtras({required RxList extras, required Function(String,double) onChangeExtra,required Function(String,double) onDeleteExtra}) {
+List<Widget> GetExtras({required RxList extras, required Function(String,double) onChangeExtra,required Function(String,double) onDeleteExtra,required Function(String,double) onRestore}) {
       List<Widget> ret = [];
 
       if (extras.isNotEmpty) {
@@ -12,6 +12,7 @@ List<Widget> GetExtras({required RxList extras, required Function(String,double)
               child:GastoView(
                 onChangeExtra,
                 onDeleteExtra,
+                onRestore,
                 gasto.nombre,
                 gasto.valor,
                 1
@@ -47,7 +48,7 @@ Widget crearNuevo({required Function(String,double) onCreateExtra }){
       Expanded(
         child: IconButton(
           icon: const Icon(Icons.check),
-          onPressed: () => onCreateExtra,
+          onPressed:()=> onCreateExtra(_nombrenuevo,_valorNuevo),
         ),
       ),
       const SizedBox(width: 10),

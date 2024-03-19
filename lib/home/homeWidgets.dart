@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/pantallas/info.dart';
 import 'package:cuentas_android/pantallas/summary.dart';
@@ -69,26 +71,25 @@ import 'package:get/get.dart';
 void nuevoUsuario({required BuildContext context, required Function(String) onChange,required Function onPressed}){
   showModalBottomSheet(
     context: context,
-    builder: (context) => Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            const Text("Nuevo usuario"),
-            Expanded(
-              child: TextField(
-                onChanged: onChange,
-                decoration: const InputDecoration(
-                  labelText: "Nombre"
-                ),
+    builder: (context) => Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          const Text("Nuevo usuario"),
+          Expanded(
+            child: TextField(
+              onChanged: onChange,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: "Nombre"
               ),
-            ),
-            IconButton(
-              onPressed: ()=>onPressed, 
-              icon: const Icon(Icons.person_add_alt_1_rounded)
             )
-          ],
-        ),
+          ),
+          FloatingActionButton(
+            onPressed: ()async=> await onPressed(),
+            child: const Icon(Icons.person_add),
+          )
+        ],
       ),
     )
   );

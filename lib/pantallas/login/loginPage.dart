@@ -151,9 +151,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: CustomPaint(
         painter: MyPattern(context),
-          child: isLogin
-            ?login()
-            :register(),
+          child: SingleChildScrollView(
+            child: isLogin
+              ?login()
+              :register(),
+          ),
       ),
     );
   }

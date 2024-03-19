@@ -4,11 +4,10 @@ import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
-List<Widget> GetGastos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete, required Function onIWTap}) {
+List<Widget> GetGastos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(String,double) onRestore, required Function onIWTap}) {
     List<Widget> ret = [];
     int contador = 0;
 
@@ -17,6 +16,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
         ret.add( GastoView(
           (name, value) => onSave,
           (name, value) => onDelete,
+          (vame,value)=>onRestore,
           gasto.nombre,
           gasto.valor,
           contador)
@@ -45,7 +45,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     return ret;
   }
 
-  List<Widget> GetIngresos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete, required Function onIWTap}) {
+  List<Widget> GetIngresos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(String,double) onRestore, required Function onIWTap}) {
     List<Widget> ret = [];
     int contador = 0;
 
@@ -54,6 +54,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
         ret.add( GastoView(
           (name, value) => onSave,
           (name, value) => onDelete,
+          (name,value)=>onRestore,
           gasto.nombre,
           gasto.valor * -1,
           contador)
@@ -99,7 +100,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     );
   }
 
-  void showIngresoModalSheet({required BuildContext context, required Function(String) onIngresoChange, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave,required RxInt ingresoSeleccionado, required Function(String,double) GuardarIngreso}){
+  void showIngresoModalSheet({required BuildContext context, required Function(String) onIngresoChange, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave,required RxInt ingresoSeleccionado, required Function(String,double) GuardarIngreso, required Function(String,double) onRestore}){
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
@@ -111,6 +112,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
           () => Padding(
             padding:const EdgeInsets.all(10),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //editar y ver ingreso base
                 ingresoEditar.value
@@ -147,6 +149,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                     mes: mes,
                     onDelete: onExtraIngresoDelete,
                     onSave: onExtraIngresoSave,
+                    onRestore: onRestore,
                     onIWTap: (){}
                   )),
                   ingresoSeleccionado.value ==-2
@@ -197,7 +200,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     );
   }
 
-  void showGastosModalSheet({required BuildContext context, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraGastoDelete,required Function(String,double) onExtraGastoSave,required RxInt gastoSeleccionado, required Function navigateToExtras}){
+  void showGastosModalSheet({required BuildContext context, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraGastoDelete,required Function(String,double) onExtraGastoSave,required RxInt gastoSeleccionado, required Function navigateToExtras, required Function(String,double) onRestore}){
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
@@ -218,6 +221,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   meses: meses,
                   onDelete: onExtraGastoDelete,
                   onSave: onExtraGastoSave,
+                  onRestore:onRestore,
                   onIWTap: navigateToExtras
                 ),
               ),
@@ -263,7 +267,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     );
   }
 
-  Widget bodyMesExists({required ThemeData theme,required RxString mes, required BuildContext context, required Function(String) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras}){
+  Widget bodyMesExists({required ThemeData theme,required RxString mes, required BuildContext context, required Function(String) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(String,double) onRestore}){
     RxInt gastoEditar = (-1).obs;
     
     return Column(
@@ -310,6 +314,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   meses: meses,
                   onExtraIngresoDelete: (n,v)=>onExtraDelete(n,-1+v),
                   onExtraIngresoSave: (n,v)=>onExtraSave(n,-1*v),
+                  onRestore: (n,v)=>onRestore(n,-1*v),
                   onIngresoChange: onIngresoChange
                 ),
                 child: Card(
@@ -353,7 +358,8 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   meses: meses,
                   navigateToExtras: onExtras,
                   onExtraGastoDelete: onExtraDelete,
-                  onExtraGastoSave: onExtraSave
+                  onExtraGastoSave: onExtraSave,
+                  onRestore: onRestore
                 )
               )
             )

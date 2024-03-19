@@ -20,29 +20,42 @@ class Extras extends StatelessWidget {
 
   String nuevoNombre = "";
   double nuevoValor = 0;
+  List<Gasto> _toDelete = [];
 
-  void SaveExtra(String nombre, double valor) {
-    if (extras.where((v) => v.nombre == nuevoNombre).isNotEmpty) {
-      extras.where((v) => v.nombre == nuevoNombre).first.valor = valor;
-    } else {
-      extras.add(Gasto(nombre: nombre, valor: valor));
-    }
-
+  void _createExtra(String nombre, double valor){
+    extras.value.add(Gasto(nombre: nombre, valor: valor));
     nuevo.value = false;
   }
+  void _saveExtra(String nombre, double valor) {
+      extras.value.where((v) => v.nombre == nombre).first.valor = valor;
+  }
 
-  void DeleteExtra(String nombre, double valor){
-    extras.value.removeWhere((element) => element.nombre == nombre && element.valor == valor);
+  void _deleteExtra(String nombre, double valor){
+    _toDelete.add(Gasto(nombre: nombre, valor: valor));
+  }
+
+  void _restoreExtra(String nombre, double valor){
+    _toDelete.removeWhere((element) => element.nombre == nombre && element.valor == valor);
+  }
+
+  void _deleteDefinitively(){
+    for(Gasto g in _toDelete){
+      extras.value.remove(g);
+    }
+  }
+
+  void _pop(BuildContext context) {
+    _deleteDefinitively();
+    c.value.Meses.where((element) => element.Anno == Values().anno.value && element.NMes == Values().GetMes()).first.Extras = extras.value;
+    positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
+    cuentaDao().almacenarDatos(c.value);
+    Values().cuentaRet = c.value;
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (_) async {
-        positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
-        await cuentaDao().almacenarDatos(c.value);
-        Values().cuentaRet = c.value;
-      },
+      onPopInvoked: (_) => _pop(context),
       child: Obx(
         () => Scaffold(
             resizeToAvoidBottomInset: true,
@@ -62,13 +75,14 @@ class Extras extends StatelessWidget {
                         Column(
                           children: ew.GetExtras(
                             extras: extras,
-                            onChangeExtra: SaveExtra,
-                            onDeleteExtra: DeleteExtra
+                            onChangeExtra: _saveExtra,
+                            onDeleteExtra: _deleteExtra,
+                            onRestore: _restoreExtra
                           )
                         ),
                         nuevo.value
-                            ? ew.crearNuevo(onCreateExtra: SaveExtra)
-                            : const SizedBox()
+                          ? ew.crearNuevo(onCreateExtra: _createExtra)
+                          : const SizedBox()
                       ],
                     ),
                   )),
