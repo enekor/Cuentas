@@ -1,6 +1,7 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/pantallas/extras.dart';
+import 'package:cuentas_android/pantallas/settings.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:cuentas_android/pattern/positions.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class Info extends StatelessWidget {
   }
 
   void _createMes(String mes, double valor){
-    c.value.Meses.add(Mes.complete(Gastos: [], Extras: [], Ingreso: valor, NMes: mes, Anno: Values().anno.value));
+    c.value.Meses.add(Mes.complete(Gastos: c.value.fijos, Extras: [], Ingreso: valor, NMes: mes, Anno: Values().anno.value));
     _hasData();
   }
 
@@ -64,6 +65,16 @@ class Info extends StatelessWidget {
       });
   }
 
+  void _navigateSettings(BuildContext context){
+    Values().gastoSeleccionado.value = -1;
+    cuentaDao().almacenarDatos(c.value);
+    positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
+    Navigator.push(
+      context, MaterialPageRoute(builder: (context) => settings(cuenta: c.value,))).then((value) {
+        c.value = Values().cuentaRet!;
+      });
+  }
+
 //pantalla
   @override
   Widget build(BuildContext context) {
@@ -82,7 +93,8 @@ class Info extends StatelessWidget {
                       meses: c.value.Meses.obs,
                       nCuenta: c.value.Nombre,
                       total: c.value.GetTotal(Values().anno.value),
-                      width: MediaQuery.of(context).size.width
+                      width: MediaQuery.of(context).size.width,
+                      navigateSettings: _navigateSettings
                     )
                     : const Text("Inicio de mes"),
                 )

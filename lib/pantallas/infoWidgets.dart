@@ -71,36 +71,48 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     return ret;
   }
 
-  Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total}){
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MediaQuery(
-            data: MediaQueryData.fromView(
-                WidgetsBinding.instance.window),
-            child: SizedBox(
-              width: width * 0.5,
-              child: Card(
-                  child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceAround,
-                children: [
-                  Text(mes),
-                  Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
-                ],
-              )),
-            ),
+  Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total, required Function navigateSettings}){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          flex: 7,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MediaQuery(
+                  data: MediaQueryData.fromView(
+                      WidgetsBinding.instance.window),
+                  child: SizedBox(
+                    width: width * 0.5,
+                    child: Card(
+                        child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(mes),
+                        Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
+                      ],
+                    )),
+                  ),
+                ),
+                SizedBox(
+                  width: width * 0.6,
+                  child: Card(
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(nCuenta),
+                          Text("${total.toStringAsFixed(2)}€")
+                      ])),
+                )
+              ],
           ),
-          SizedBox(
-            width: width * 0.6,
-            child: Card(
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(nCuenta),
-                    Text("${total.toStringAsFixed(2)}€")
-                ])),
-          )
-        ],
+        ),
+        Expanded(
+          flex:3,
+          child: IconButton(icon: const Icon(Icons.settings),onPressed: ()=>navigateSettings,),
+        )
+      ],
     );
   }
 
