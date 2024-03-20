@@ -17,10 +17,11 @@ class Extras extends StatelessWidget {
   late Rx<Cuenta> c;
   late RxList<Gasto> extras;
   RxBool nuevo = false.obs;
+  RxInt seleccionado = (-1).obs;
 
   String nuevoNombre = "";
   double nuevoValor = 0;
-  List<Gasto> _toDelete = [];
+  RxList<Gasto> _toDelete = RxList<Gasto>([]);
 
   void _createExtra(String nombre, double valor){
     extras.value.add(Gasto(nombre: nombre, valor: valor));
@@ -31,15 +32,15 @@ class Extras extends StatelessWidget {
   }
 
   void _deleteExtra(String nombre, double valor){
-    _toDelete.add(Gasto(nombre: nombre, valor: valor));
+    _toDelete.value.add(Gasto(nombre: nombre, valor: valor));
   }
 
   void _restoreExtra(String nombre, double valor){
-    _toDelete.removeWhere((element) => element.nombre == nombre && element.valor == valor);
+    _toDelete.value.removeWhere((element) => element.nombre == nombre && element.valor == valor);
   }
 
   void _deleteDefinitively(){
-    for(Gasto g in _toDelete){
+    for(Gasto g in _toDelete.value){
       extras.value.remove(g);
     }
   }
@@ -77,7 +78,11 @@ class Extras extends StatelessWidget {
                             extras: extras,
                             onChangeExtra: _saveExtra,
                             onDeleteExtra: _deleteExtra,
-                            onRestore: _restoreExtra
+                            onRestore: _restoreExtra,
+                            onSelect: (v)=>seleccionado.value = v,
+                            deleted: _toDelete,
+                            seleccionado: seleccionado,
+                            theme: Theme.of(context)
                           )
                         ),
                         nuevo.value

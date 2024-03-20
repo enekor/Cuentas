@@ -60,7 +60,7 @@ class Mes {
 
     for (int g = 0; g < Gastos.length; g++) {
       if (Gastos[g].valor < 0) {
-        ret += Gastos[g].valor;
+        ret += -1*Gastos[g].valor;
       }
     }
 

@@ -1,93 +1,106 @@
+import 'package:cuentas_android/models/Gasto.dart';
+import 'package:cuentas_android/themes/DarkTheme.dart';
+import 'package:cuentas_android/themes/LightTheme.dart';
+import 'package:cuentas_android/values.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-Widget GastoView(
-    void Function(String, double) OnSave,
-    void Function(String, double) OnDelete,
-    void Function(String, double) OnRestore,
+Widget gastoView(
+    void Function(String, double) onSave,
+    void Function(String, double) onDelete,
+    void Function(int) onSelect,
     String nombre,
     double valor,
-    int contador) {
-
-  RxBool tocado = false.obs;
-  RxBool borrado = false.obs;
+    int contador,
+    ThemeData theme) {
   
-  return Obx(()=>tocado.value
-    ? Padding(
-    padding: const EdgeInsets.all(8),
-    child: Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex:3,
-            child: Text(nombre)
-          ),
-          Expanded(
-            flex:5,
-            child: TextField(
-                keyboardType: TextInputType.number,
-                decoration:const InputDecoration(labelText: "Monto"),
-                onChanged: (v) => valor = double.parse(v)),
-          ),
-          Expanded(
-            flex:1,
-            child: IconButton(
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.green,
+  double _nuevoValor = valor;
+  return Obx(()=>Values().gastoSeleccionado.value == contador
+    ? Center(
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(nombre),
+              Expanded(
+                child: TextField(
+                  autofocus: true,
+                  onChanged: (v)=>_nuevoValor = double.parse(v),
+                  decoration: const InputDecoration(
+                    labelText: "Monto"
+                  ),
+                  keyboardType: TextInputType.number
                 ),
+              ),
+              IconButton(
                 onPressed: () {
-                  tocado.value = false;
-                  OnSave(nombre, valor);
-                }),
+                  Values().gastoSeleccionado.value = -1;
+                  onSave(nombre,_nuevoValor);
+                }, 
+                icon: const Icon(Icons.check),
+                color: theme.brightness == Brightness.dark
+                  ? AppColorsD.okButtonColor
+                  : AppColorsL.okButtonColor
+              ),
+              IconButton(
+                onPressed: () {
+                  Values().gastoSeleccionado.value = -1;
+                  onDelete(nombre,valor);
+                }, 
+                icon: const Icon(Icons.delete),
+                color: theme.brightness == Brightness.dark
+                  ? AppColorsD.errorButtonColor
+                  : AppColorsL.errorButtonColor
+              )
+            ],
           ),
-          Expanded(
-            flex:1,
-            child: IconButton(
-                icon: const Icon(Icons.cancel, color: Colors.red),
-                onPressed: (){
-                  tocado.value = false;
-                  borrado.value = true;
-                  OnDelete(nombre, valor);
-                }),
+        )
+      ),
+    )
+    :Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(nombre),
+              Text("${valor.toStringAsFixed(2)}€"),
+              IconButton(
+                onPressed: () {
+                  Values().gastoSeleccionado.value = -1;
+                  onSelect(contador);
+                }, 
+                icon: const Icon(Icons.edit),
+                color: theme.hintColor,
               ),
             ],
           ),
         ),
-      )
-    : Padding(
-      padding: const EdgeInsets.only(top:10.0,bottom: 10),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: borrado.value == false
-          ?[
-            Text(nombre), 
-            TextButton(
-              onPressed: ()=>tocado.value = true, 
-              child: Text("${valor.toStringAsFixed(2)}€")
-            )
-          ]
-          :[
-            Text(
-              nombre,
-              style:const TextStyle(
-                decoration: TextDecoration.lineThrough,
-                color: Colors.red
-              )
-            ),
-            IconButton(
-              icon: const Icon(Icons.restore),
-              onPressed: (){
-                borrado.value = false;
-                OnRestore(nombre,valor);
-              },
-              color: Colors.blue,
-            )
-          ],
-        ),
       ),
     )
+  );
+}
+
+Widget deletedView(
+  void Function(String,double) onRestore,
+  Gasto gasto){
+
+  return Card(
+    child: Padding(
+      padding: EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Text(gasto.nombre),
+          IconButton(
+            onPressed: ()=>onRestore(gasto.nombre,gasto.valor), 
+            icon: const Icon(Icons.restore),
+            color: Colors.blue,
+          )
+        ],
+      ),
+    ),
   );
 }

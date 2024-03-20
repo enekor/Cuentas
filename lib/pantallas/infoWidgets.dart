@@ -1,25 +1,26 @@
+import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/models/Mes.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
 import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
-List<Widget> GetGastos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(String,double) onRestore, required Function onIWTap}) {
+List<Widget> GetGastos({required List<Mes> meses, required String mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(int) onSelect, required Function onIWTap, required ThemeData theme}) {
     List<Widget> ret = [];
     int contador = 0;
 
-    meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
+    meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
       if (gasto.valor > 0) {
-        ret.add( GastoView(
-          (name, value) => onSave,
-          (name, value) => onDelete,
-          (vame,value)=>onRestore,
+        ret.add( gastoView(
+          onSave,
+          onDelete,
+          onSelect,
           gasto.nombre,
           gasto.valor,
-          contador)
+          contador,
+          theme
+          )
         );
       }
       contador++;
@@ -34,7 +35,7 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               const Text("Extras"),
-              Text("${meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetExtras().toStringAsFixed(2)}€")
+              Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetExtras().toStringAsFixed(2)}€")
             ],
           ),
         ),
@@ -45,19 +46,21 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     return ret;
   }
 
-  List<Widget> GetIngresos({required List<Mes> meses, required RxString mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(String,double) onRestore, required Function onIWTap}) {
+  List<Widget> GetIngresos({required List<Mes> meses, required String mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(int) onSelected, required Function onIWTap, required ThemeData theme}) {
     List<Widget> ret = [];
     int contador = 0;
 
-    meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
+    meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.Gastos.forEach((gasto) {
       if (gasto.valor < 0) {
-        ret.add( GastoView(
-          (name, value) => onSave,
-          (name, value) => onDelete,
-          (name,value)=>onRestore,
+        ret.add( gastoView(
+          onSave,
+          onDelete,
+          onSelected,
           gasto.nombre,
           gasto.valor * -1,
-          contador)
+          contador,
+          theme
+          )
         );
       }
       contador++;
@@ -67,55 +70,63 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
     return ret;
   }
 
-  Widget appBarMesExists({required double width, required RxString mes,required RxList<Mes> meses, required String nCuenta, required double total}){
+  List<Widget> GetBorrados({required List<Gasto> borrados, required void Function(String,double) onRestore}){
+    List<Widget> ret = [];
+    borrados.forEach((element) {
+      ret.add(deletedView(onRestore,element));
+    });
+
+    return ret;
+  }
+
+  Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total}){
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MediaQuery(
-          data: MediaQueryData.fromView(
-              WidgetsBinding.instance.window),
-          child: SizedBox(
-            width: width * 0.5,
-            child: Card(
-                child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceAround,
-              children: [
-                Text(mes.value),
-                Text("${meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
-              ],
-            )),
-          ),
-        ),
-        SizedBox(
-          width: width * 0.6,
-          child: Card(
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MediaQuery(
+            data: MediaQueryData.fromView(
+                WidgetsBinding.instance.window),
+            child: SizedBox(
+              width: width * 0.5,
+              child: Card(
+                  child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceAround,
                 children: [
-                  Text(nCuenta),
-                  Text("${total.toStringAsFixed(2)}€")
-              ])),
-        )
-      ],
+                  Text(mes),
+                  Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
+                ],
+              )),
+            ),
+          ),
+          SizedBox(
+            width: width * 0.6,
+            child: Card(
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(nCuenta),
+                    Text("${total.toStringAsFixed(2)}€")
+                ])),
+          )
+        ],
     );
   }
 
-  void showIngresoModalSheet({required BuildContext context, required Function(String) onIngresoChange, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave,required RxInt ingresoSeleccionado, required Function(String,double) GuardarIngreso, required Function(String,double) onRestore}){
+  void showIngresoModalSheet({required BuildContext context, required Function(double) onIngresoChange, required List<Mes> meses, required String mes, required Function(String,double) onExtraIngresoDelete,required Function(String,double) onExtraIngresoSave, required Function(String,double) guardarIngreso, required Function(int) onSelected, required ThemeData theme, required List<Gasto> deleted, required Function(String,double) onRestored}){
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
-    RxBool ingresoEditar = false.obs;
+    bool ingresoEditar = false;
     showModalBottomSheet(
       isScrollControlled: true,
         context: context,
-        builder: (context) => Obx(
-          () => Padding(
+        builder: (context) => Padding(
             padding:const EdgeInsets.all(10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //editar y ver ingreso base
-                ingresoEditar.value
+                ingresoEditar
                     ? Row(
                         children: [
                           const Text("Ingresos"),
@@ -123,22 +134,22 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                             child:TextField(
                               keyboardType:TextInputType.number,
                               decoration:const InputDecoration(labelText: "Monto"),
-                              onChanged:(v)=>onIngresoChange
+                              onChanged:(v)=>onIngresoChange(double.parse(v))
                             ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.check),
-                            onPressed: () =>ingresoEditar.value = false,
+                            onPressed: () =>ingresoEditar = false,
                           )
                         ],
                       )
                     : GestureDetector(
-                        onTap: () =>ingresoEditar.value =true,
+                        onTap: () =>ingresoEditar =true,
                         child: Row(
                           mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                           children: [
                             const Text("Ingresos"),
-                            Text(meses.where((v) =>v.NMes ==mes.value && v.Anno == Values().anno.value).first.Ingreso.toString()),
+                            Text(meses.where((v) =>v.NMes ==mes && v.Anno == Values().anno.value).first.Ingreso.toString()),
                           ],
                         ),
                       ),
@@ -148,11 +159,15 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                     meses: meses,
                     mes: mes,
                     onDelete: onExtraIngresoDelete,
-                    onSave: onExtraIngresoSave,
-                    onRestore: onRestore,
-                    onIWTap: (){}
+                    onSave: (n,v)=>onExtraIngresoSave(n,v),
+                    onSelected: onSelected,
+                    onIWTap: (){},
+                    theme: theme
                   )),
-                  ingresoSeleccionado.value ==-2
+                  Column(
+                    children: GetBorrados(borrados: deleted, onRestore: onRestored),
+                  ),
+                  Values().gastoSeleccionado.value ==-2
                   ? Row(
                       mainAxisAlignment:MainAxisAlignment.spaceAround,
                       children: [
@@ -163,8 +178,8 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                               color: Colors.green,
                               onPressed:
                                   (){
-                                    GuardarIngreso;
-                                    ingresoSeleccionado.value =-1;
+                                    guardarIngreso(_nombrenuevo,_valorNuevo);
+                                    Values().gastoSeleccionado.value =-1;
                                   }
                                 
                             ),
@@ -191,24 +206,22 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   : const SizedBox(),
                 FloatingActionButton(
                   child: const Icon(Icons.add),
-                  onPressed: () =>ingresoSeleccionado.value = -2,
+                  onPressed: () =>Values().gastoSeleccionado.value = -2,
                 )
               ],
             ),
           ),
-        )
     );
   }
 
-  void showGastosModalSheet({required BuildContext context, required List<Mes> meses, required RxString mes, required Function(String,double) onExtraGastoDelete,required Function(String,double) onExtraGastoSave,required RxInt gastoSeleccionado, required Function navigateToExtras, required Function(String,double) onRestore}){
+  void showGastosModalSheet({required BuildContext context, required List<Mes> meses, required String mes, required Function(String,double) onExtraGastoDelete,required Function(String,double) onExtraGastoSave, required Function navigateToExtras, required Function(int) onSelected, required ThemeData theme}){
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      builder: (context) => Obx(
-        () => Padding(
+      builder: (context) =>Padding(
           padding:const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -221,16 +234,21 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   meses: meses,
                   onDelete: onExtraGastoDelete,
                   onSave: onExtraGastoSave,
-                  onRestore:onRestore,
-                  onIWTap: navigateToExtras
+                  onSelect: onSelected,
+                  onIWTap: navigateToExtras,
+                  theme: theme
                 ),
               ),
-              gastoSeleccionado.value == -2
+              Values().gastoSeleccionado.value == -2
                 ? Row(children: [
                     Expanded(
                       child: IconButton(
                         icon: const Icon(Icons.check),
-                        onPressed: ()=>onExtraGastoSave(_nombrenuevo,-1+_valorNuevo)
+                        onPressed: (){
+                          onExtraGastoSave(_nombrenuevo,_valorNuevo);
+                          Values().gastoSeleccionado.value = -1;
+                        }
+
                       ),
                     ),
                     const SizedBox(
@@ -257,152 +275,152 @@ List<Widget> GetGastos({required List<Mes> meses, required RxString mes, require
                   ])
                 : const SizedBox(),
               FloatingActionButton(
-                onPressed: () =>gastoSeleccionado.value = -2,
+                onPressed: () =>Values().gastoSeleccionado.value = -2,
                 child: const Icon(Icons.add)
               ),
             ],
           ),
         ),
-      ),
     );
   }
 
-  Widget bodyMesExists({required ThemeData theme,required RxString mes, required BuildContext context, required Function(String) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(String,double) onRestore}){
-    RxInt gastoEditar = (-1).obs;
+  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context, required Function(double) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(int) onSelected, required Function(String,double) onRestoreGasto, required List<Gasto> deleted}){
     
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: DropdownButtonFormField(
-            dropdownColor: theme.primaryColor,
-            decoration: InputDecoration(
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                fillColor:
-                    theme.primaryColor),
-            value: mes.value,
-            items: Values().nombresMes.map((item) {
-              return DropdownMenuItem(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
-            onChanged: (item) {
-              mes.value = item.toString();
-              Values().ChangeMes(mes.value);
-            },
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: DropdownButtonFormField(
+              dropdownColor: theme.primaryColor,
+              decoration: InputDecoration(
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  fillColor:
+                      theme.primaryColor),
+              value: mes,
+              items: Values().nombresMes.map((item) {
+                return DropdownMenuItem(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
+              onChanged: (item) {
+                mes = item.toString();
+                Values().ChangeMes(mes);
+              },
+            ),
           ),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //ingresos
-            Expanded(
-              flex: 5,
-              child: InkWell(
-                onTap: () => showIngresoModalSheet(
-                  context: context,
-                  GuardarIngreso: (n,v)=>onExtraSave(n,-1*v),
-                  ingresoSeleccionado: gastoEditar,
-                  mes: mes,
-                  meses: meses,
-                  onExtraIngresoDelete: (n,v)=>onExtraDelete(n,-1+v),
-                  onExtraIngresoSave: (n,v)=>onExtraSave(n,-1*v),
-                  onRestore: (n,v)=>onRestore(n,-1*v),
-                  onIngresoChange: onIngresoChange
-                ),
-                child: Card(
-                  color: theme.brightness == Brightness.dark
-                    ?AppColorsD.okButtonColor
-                    :AppColorsL.okButtonColor,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      const Text("Ingresos"),
-                      Text("${meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetIngresos().toStringAsFixed(2)}€")
-                    ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //ingresos
+              Expanded(
+                flex: 5,
+                child: InkWell(
+                  onTap: () => showIngresoModalSheet(
+                    context: context,
+                    guardarIngreso: (n,v)=>onExtraSave(n,(-1)*v),
+                    mes: mes,
+                    meses: meses,
+                    onExtraIngresoDelete: (n,v)=>onExtraDelete(n,(-1)+v),
+                    onExtraIngresoSave: (n,v)=>onExtraSave(n,(-1)*v),
+                    onSelected: onSelected,
+                    onIngresoChange: (v)=>onIngresoChange(v),
+                    theme: theme,
+                    deleted:deleted,
+                    onRestored: onRestoreGasto
+                  ),
+                  child: Card(
+                    color: theme.brightness == Brightness.dark
+                      ?AppColorsD.okButtonColor
+                      :AppColorsL.okButtonColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        const Text("Ingresos"),
+                        Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetIngresos().toStringAsFixed(2)}€")
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            //gastos
-            Expanded(
-              flex: 5,
-              child: InkWell(
-                child: Card(
-                  color: theme.brightness == Brightness.dark
-                    ? AppColorsD.errorButtonColor
-                    :AppColorsL.errorButtonColor,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      const Text("Gastos"),
-                      Text("${meses.where((v) => v.NMes == mes.value && v.Anno == Values().anno.value).first.GetGastos().toStringAsFixed(2)}€")
-                    ],
+              //gastos
+              Expanded(
+                flex: 5,
+                child: InkWell(
+                  child: Card(
+                    color: theme.brightness == Brightness.dark
+                      ? AppColorsD.errorButtonColor
+                      :AppColorsL.errorButtonColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        const Text("Gastos"),
+                        Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetGastos().toStringAsFixed(2)}€")
+                      ],
+                    ),
                   ),
-                ),
-                onTap: () => showGastosModalSheet(
-                  context: context,
-                  gastoSeleccionado: gastoEditar,
-                  mes: mes,
-                  meses: meses,
-                  navigateToExtras: onExtras,
-                  onExtraGastoDelete: onExtraDelete,
-                  onExtraGastoSave: onExtraSave,
-                  onRestore: onRestore
+                  onTap: () => showGastosModalSheet(
+                    context: context,
+                    mes: mes,
+                    meses: meses,
+                    navigateToExtras: onExtras,
+                    onExtraGastoDelete: onExtraDelete,
+                    onExtraGastoSave: onExtraSave,
+                    onSelected: onSelected,
+                    theme: theme
+                  )
                 )
               )
-            )
-          ]
-        ),
-      ],
+            ]
+          ),
+        ],
     );
   }
 
-  Widget bodyMesNotExists({required RxString mes, required Function(String,double) onNuevoIngreso, required Function(String,double) onCrearMes, required ThemeData theme}){
+  Widget bodyMesNotExists({required String mes, required Function(String,double) onNuevoIngreso, required Function(String,double) onCrearMes, required ThemeData theme}){
 
     double ingreso = 0;
     return Column(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Image.network(
-        "https://cdn.icon-icons.com/icons2/1632/PNG/512/62878dollarbanknote_109277.png",
-        height: 100,
-        width: 100,
-      ),
-      const SizedBox(height: 80),
-      Text("¿Cuanto se ha ingresado en ${mes.value}?"),
-      const SizedBox(
-        height: 10,
-      ),
-      TextField(
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-            labelText: "Ingreso para ${mes.value}"),
-        onChanged: (v) => ingreso = double.parse(v)
-      ),
-      const SizedBox(
-        height: 10,
-      ),
-      IconButton(
-        onPressed: ()=>onCrearMes(mes.value,ingreso),
-        icon: const Icon(Icons.check),
-        color: theme.brightness == Brightness.dark
-          ? AppColorsD.okButtonColor
-          : AppColorsL.okButtonColor
-      )
-      ]
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.network(
+          "https://cdn.icon-icons.com/icons2/1632/PNG/512/62878dollarbanknote_109277.png",
+          height: 100,
+          width: 100,
+        ),
+        const SizedBox(height: 80),
+        Text("¿Cuanto se ha ingresado en ${mes}?"),
+        const SizedBox(
+          height: 10,
+        ),
+        TextField(
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+              labelText: "Ingreso para ${mes}"),
+          onChanged: (v) => ingreso = double.parse(v)
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        IconButton(
+          onPressed: ()=>onCrearMes(mes,ingreso),
+          icon: const Icon(Icons.check),
+          color: theme.brightness == Brightness.dark
+            ? AppColorsD.okButtonColor
+            : AppColorsL.okButtonColor
+        )
+        ]
     );
   }

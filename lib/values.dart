@@ -37,6 +37,7 @@ class Values {
   //int seleccionado = -1;
   RxInt mes = RxInt(DateTime.now().month-1);
   RxInt anno = RxInt(DateTime.now().year);
+  RxInt gastoSeleccionado = (-1).obs;
 
   /*void seleccionar(int id){
     seleccionado = cuentas.indexOf(cuentas.where((v)=>v.id==id).first);
