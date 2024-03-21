@@ -73,10 +73,10 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
 
   Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total, required Function navigateSettings}){
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Expanded(
-          flex: 7,
+          flex: 9,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -109,8 +109,8 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
           ),
         ),
         Expanded(
-          flex:3,
-          child: IconButton(icon: const Icon(Icons.settings),onPressed: ()=>navigateSettings,),
+          flex:1,
+          child: IconButton(icon: const Icon(Icons.receipt_long_rounded),onPressed: ()=>navigateSettings(),),
         )
       ],
     );
@@ -295,13 +295,12 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     );
   }
 
-  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context, required Function(double) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(int) onSelected, required List<Gasto> deleted}){
+  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context, required Function(double) onIngresoChange, required Function(String,double) onExtraSave, required Function(String,double) onExtraDelete, required List<Mes> meses, required Function onExtras,required Function(int) onSelected, required List<Gasto> deleted, required Function(String) onSelecMes}){
     
     return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(Values().gastoSeleccionado.value.toString()),
           //selector de meses
           Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
@@ -324,6 +323,7 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
               onChanged: (item) {
                 mes = item.toString();
                 Values().ChangeMes(mes);
+                onSelecMes(mes);
               },
             ),
           ),
@@ -402,7 +402,7 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
 
   Widget bodyMesNotExists({required String mes, required Function(String,double) onNuevoIngreso, required Function(String,double) onCrearMes, required ThemeData theme}){
 
-    double ingreso = 0;
+    TextEditingController controller = TextEditingController();
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -419,16 +419,16 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
           height: 10,
         ),
         TextField(
+          controller: controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-              labelText: "Ingreso para ${mes}"),
-          onChanged: (v) => ingreso = double.parse(v)
+            labelText: "Ingreso para ${mes}"),
         ),
         const SizedBox(
           height: 10,
         ),
         IconButton(
-          onPressed: ()=>onCrearMes(mes,ingreso),
+          onPressed: ()=>onCrearMes(mes,double.parse(controller.text)),
           icon: const Icon(Icons.check),
           color: theme.brightness == Brightness.dark
             ? AppColorsD.okButtonColor

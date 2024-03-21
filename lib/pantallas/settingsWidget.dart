@@ -78,9 +78,27 @@ Widget nuevoFijo({required Function(String,double) onCreate, required ThemeData 
 }
 
 Widget noFijos(){
-  return const Text("No tienes gastos fijos");
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Image.asset(
+        "lib/assets/images/gatobuscando.png",
+        width: 300,
+        height: 300,
+      ),
+      Text("No tienes gastos fijos")
+    ],
+  );
 }
 
-FloatingActionButton crearNuevo({required Function onTap}){
-  return FloatingActionButton(onPressed: ()=>onTap, child: const Icon(Icons.add),);
+FloatingActionButton crearNuevo(){
+  return FloatingActionButton(
+    onPressed: ()=>Values().gastoSeleccionado.value != -2
+      ?Values().gastoSeleccionado.value = -2
+      :Values().gastoSeleccionado.value = -1,
+    child: Icon(Values().gastoSeleccionado.value == -2
+        ?Icons.close
+        :Icons.add
+    ),
+  );
 }

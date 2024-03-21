@@ -22,9 +22,9 @@ class Info extends StatelessWidget {
   RxBool _hasMesData = false.obs;
 
 //metodos
-  void _hasData() {
+  bool _hasData(String mes) {
     bool exists = c.value.Meses.where((v) => v.NMes == _mes.value && v.Anno == Values().anno.value).isNotEmpty;
-    _hasMesData.value = exists;
+    return exists;
   }
 
   void _saveGasto(String nombre, double valor) {
@@ -35,9 +35,24 @@ class Info extends StatelessWidget {
     }
   }
 
+  void _seleccionarMes(String mes){
+    _mes.value = mes;
+    if(_hasData(mes)){
+      _hasMesData.value = true;
+    }
+    else{
+      _createMes(mes,0);
+      _hasMesData.value = false;
+    }
+  }
+
   void _createMes(String mes, double valor){
-    c.value.Meses.add(Mes.complete(Gastos: c.value.fijos, Extras: [], Ingreso: valor, NMes: mes, Anno: Values().anno.value));
-    _hasData();
+    if(_hasData(mes)){
+      c.value.Meses.where((element) => element.NMes == mes && element.Anno == Values().anno).first.Ingreso = valor;
+    }else{
+      c.value.Meses.add(Mes.complete(Gastos: c.value.fijos, Extras: [], Ingreso: valor, NMes: mes, Anno: Values().anno.value));
+    }
+
   }
 
   void _updateIngreso(String mes, double valor){
@@ -78,34 +93,32 @@ class Info extends StatelessWidget {
 //pantalla
   @override
   Widget build(BuildContext context) {
-    _hasData();
+    _seleccionarMes(Values().GetMes());
     return PopScope(
         onPopInvoked: (_)=> _pop(context),
-        child:Scaffold(
+        child:Obx(()=>Scaffold(
               resizeToAvoidBottomInset: true,
               appBar: AppBar(
                 centerTitle: false,
                 backgroundColor: Theme.of(context).primaryColor,
                 elevation: 0.0,
-                title:Obx(()=>c.value.Meses.where((v) => v.NMes == _mes.value && v.Anno == Values().anno.value).isNotEmpty
+                title:  c.value.Meses.where((element) => element.NMes == _mes.value && element.Anno == Values().anno.value).first.Ingreso != 0
                     ? iw.appBarMesExists(
                       mes: _mes.value,
                       meses: c.value.Meses.obs,
                       nCuenta: c.value.Nombre,
                       total: c.value.GetTotal(Values().anno.value),
                       width: MediaQuery.of(context).size.width,
-                      navigateSettings: _navigateSettings
+                      navigateSettings: ()=>_navigateSettings(context)
                     )
                     : const Text("Inicio de mes"),
-                )
               ),
               body: CustomPaint(
                 painter: MyPattern(context),
-                child: Obx(()=>Padding(
+                child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Center(
-                      child: _hasMesData.value
-                        ? iw.bodyMesExists(
+                      child: iw.bodyMesExists(
                           context: context,
                           mes: _mes.value,
                           meses: c.value.Meses,
@@ -115,19 +128,14 @@ class Info extends StatelessWidget {
                           onIngresoChange: (v)=>_updateIngreso(_mes.value,v),
                           theme: Theme.of(context),
                           onSelected: (v)=>Values().gastoSeleccionado.value = v,
-                          deleted: _toDelete
+                          deleted: _toDelete,
+                          onSelecMes: _seleccionarMes
                         )
-                        : iw.bodyMesNotExists(
-                          mes: _mes.value,
-                          onCrearMes: _createMes,
-                          onNuevoIngreso: _updateIngreso,
-                          theme: Theme.of(context)
-                        )
+                      )
                     ),
                   ),
                 ),
               ),
-        )
         );
   }
 }
