@@ -41,8 +41,8 @@ List<Widget> GetExtras({required RxList extras, required Function(String,double)
     }
 
 Widget crearNuevo({required Function(String,double) onCreateExtra }){
-  String _nombrenuevo = "";
-  double _valorNuevo = 0;
+  TextEditingController _nombreNuevo = TextEditingController();
+  TextEditingController  _valorNuevo = TextEditingController();
   return Row(
     mainAxisAlignment:
         MainAxisAlignment.spaceAround,
@@ -50,7 +50,7 @@ Widget crearNuevo({required Function(String,double) onCreateExtra }){
       Expanded(
         child: IconButton(
           icon: const Icon(Icons.check),
-          onPressed:()=> onCreateExtra(_nombrenuevo,_valorNuevo),
+          onPressed:()=> onCreateExtra(_nombreNuevo.text,double.parse(_valorNuevo.text)),
         ),
       ),
       const SizedBox(width: 10),
@@ -58,9 +58,7 @@ Widget crearNuevo({required Function(String,double) onCreateExtra }){
         child: TextField(
           decoration: const InputDecoration(
               labelText: "Nombre"),
-          onChanged: (v) {
-            _nombrenuevo = v;
-          },
+          controller: _nombreNuevo,
         ),
       ),
       const SizedBox(
@@ -71,9 +69,7 @@ Widget crearNuevo({required Function(String,double) onCreateExtra }){
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
               labelText: "Monto"),
-          onChanged: (v) {
-            _valorNuevo = double.parse(v);
-          },
+          controller: _valorNuevo,
         ),
       )
     ],

@@ -18,8 +18,6 @@ class Extras extends StatelessWidget {
   late RxList<Gasto> extras;
   RxBool nuevo = false.obs;
 
-  String nuevoNombre = "";
-  double nuevoValor = 0;
   RxList<Gasto> _toDelete = RxList<Gasto>([]);
 
   void _createExtra(String nombre, double valor){
