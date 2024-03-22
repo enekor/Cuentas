@@ -55,7 +55,7 @@ Widget nuevoFijo({required Function(String,double) onCreate, required ThemeData 
           padding: const EdgeInsets.only(right: 8,left: 8),
           child: 
             TextField(
-              onChanged: (v)=>_nombre = v,
+              onChanged: (v)=>_valor = double.parse(v),
               decoration: const InputDecoration(
                 labelText: "Monto"
               ),

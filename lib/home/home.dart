@@ -23,6 +23,11 @@ class Home extends StatelessWidget {
     _cargado.value = true;
   }
 
+  bool selecSummary(){
+    _seleccionarSummary.value = !_seleccionarSummary.value;
+    return _seleccionarSummary.value;
+  }
+
   Future _logout() async{
     await Auth().signOut();
   }
@@ -58,7 +63,7 @@ class Home extends StatelessWidget {
                       cc: _cuentas.value, 
                       width: MediaQuery.of(context).size.width, 
                       theme: Theme.of(context), 
-                      selecSummary: (value) =>_seleccionarSummary.value = value
+                      selecSummary: selecSummary
                     ),
                     IconButton(
                       onPressed: _logout /*cuentaDao().migrardatos*/, 

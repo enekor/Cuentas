@@ -11,9 +11,8 @@ import 'package:cuentas_android/widgets/ItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
- Widget selectYear({required List<Cuenta> cc,required double width,required ThemeData theme, required Function(bool) selecSummary}) {
-  RxBool _selectSummary = false.obs;
-
+ Widget selectYear({required List<Cuenta> cc,required double width,required ThemeData theme, required bool Function() selecSummary}) {
+  RxBool _selecSummary = false.obs;
   return SizedBox(
     width: width/2,
     child: Padding(
@@ -49,10 +48,9 @@ import 'package:get/get.dart';
             flex:2,
             child: IconButton(
               onPressed: (){
-                _selectSummary.value = true;
-                selecSummary(_selectSummary.value);
+                _selecSummary.value = selecSummary();
               },
-              color: _selectSummary.value
+              color: _selecSummary.value
               ?theme.brightness == Brightness.dark
                 ? AppColorsD.errorButtonColor
                 :AppColorsL.errorButtonColor
