@@ -40,9 +40,10 @@ List<Widget> GetExtras({required RxList extras, required Function(String,double)
       return ret;
     }
 
+TextEditingController _nombreNuevo = TextEditingController();
+TextEditingController  _valorNuevo = TextEditingController();
 Widget crearNuevo({required Function(String,double) onCreateExtra }){
-  TextEditingController _nombreNuevo = TextEditingController();
-  TextEditingController  _valorNuevo = TextEditingController();
+
   return Row(
     mainAxisAlignment:
         MainAxisAlignment.spaceAround,
