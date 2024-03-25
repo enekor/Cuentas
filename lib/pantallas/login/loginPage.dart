@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  bool _hidePass = false;
+  bool _hidePass = true;
   void changeVisible(){
     setState(() {
       _hidePass = !_hidePass;
@@ -68,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             TextField(
+              obscureText: _hidePass,
               controller: _passwordCOntroller,
               decoration: InputDecoration(
                 labelText: "Contraseña",

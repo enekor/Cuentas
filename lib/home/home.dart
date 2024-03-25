@@ -1,6 +1,10 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/dao/userDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
+import 'package:cuentas_android/pantallas/info.dart';
+import 'package:cuentas_android/pantallas/summary.dart';
+import 'package:cuentas_android/pattern/positions.dart';
+import 'package:cuentas_android/values.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:get/Get.dart';
@@ -38,6 +42,17 @@ class Home extends StatelessWidget {
     _vuelto.value = true;
   }
 
+  void _navigateInfo(BuildContext context, bool seleccionarSummary, Cuenta cuenta){
+    positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
+    Navigator.of(context).push(
+    seleccionarSummary
+      ?MaterialPageRoute(builder: (context)=> SummaryPage(cuenta: cuenta,))
+      :MaterialPageRoute(builder: (context) => Info(cuenta:cuenta))
+    ).then((value) {
+      _cuentas.value.where((c) => c.id == cuenta.id).toList().first = Values().cuentaRet!;
+      Values().anno.value = DateTime.now().year;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +103,8 @@ class Home extends StatelessWidget {
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 seleccionarSummary: _seleccionarSummary,
-                vuelto:(value)=>_vuelto.value = true
+                vuelto:(value)=>_vuelto.value = true,
+                navigateInfo: (cuenta)=>_navigateInfo(context,_seleccionarSummary.value,cuenta)
               )
               :Center(
                 child: CircularProgressIndicator(color:Theme.of(context).primaryColor),

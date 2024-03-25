@@ -93,7 +93,7 @@ void nuevoUsuario({required BuildContext context, required Function(String) onCh
   );
 }
 
-Widget hasData({required BuildContext context,required RxBool seleccionarSummary,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto}){
+Widget hasData({required BuildContext context,required RxBool seleccionarSummary,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto, required Function(Cuenta) navigateInfo}){
     return Obx(()=>Center(
         child:Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -108,17 +108,7 @@ Widget hasData({required BuildContext context,required RxBool seleccionarSummary
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: cuentas.value.map<Widget>((cuenta) => GestureDetector(
-                  onTap: () {
-                    positions().ChangePositions(width,height);
-                    Navigator.of(context).push(
-                      seleccionarSummary.value
-                        ?MaterialPageRoute(builder: (context)=> SummaryPage(cuenta: cuenta,))
-                        :MaterialPageRoute(builder: (context) => Info(cuenta:cuenta))
-                      ).then((value) {
-                        vuelto(value);
-                        cuenta = Values().cuentaRet!;
-                      });
-                  },
+                  onTap: ()=>navigateInfo(cuenta),
                   child: SizedBox(
                     height: width/4,
                     width:  width/4,

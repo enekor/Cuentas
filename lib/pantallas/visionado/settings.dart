@@ -1,7 +1,7 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Gasto.dart';
-import 'package:cuentas_android/pantallas/settingsWidget.dart';
+import 'package:cuentas_android/widgets/views/settingsWidget.dart';
 import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:flutter/material.dart';
