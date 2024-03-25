@@ -44,6 +44,12 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  bool _hidePass = false;
+  void changeVisible(){
+    setState(() {
+      _hidePass = !_hidePass;
+    });
+  }
   Widget login() => 
     Center(
       child: Padding(
@@ -63,8 +69,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextField(
               controller: _passwordCOntroller,
-              decoration: const InputDecoration(
-                labelText: "Contraseña"
+              decoration: InputDecoration(
+                labelText: "Contraseña",
+                suffixIcon: IconButton(
+                  onPressed: changeVisible, 
+                  icon: Icon(_hidePass?Icons.visibility:Icons.visibility_off)
+                )
+
               ),
             ),
             Text(errorMessage!),
@@ -102,15 +113,25 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             TextField(
+              obscureText: _hidePass,
               controller: _passwordCOntroller,
-              decoration: const InputDecoration(
-                labelText: "Contraseña"
+              decoration: InputDecoration(
+                labelText: "Contraseña",
+                suffixIcon: IconButton(
+                  onPressed: changeVisible, 
+                  icon: Icon(_hidePass?Icons.visibility:Icons.visibility_off)
+                )
               ),
             ),
             TextField(
+              obscureText: _hidePass,
               controller: _repPasswordCOntroller,
-              decoration: const InputDecoration(
-                labelText: "Repite la contraseña"
+              decoration: InputDecoration(
+                labelText: "Repite la contraseña",
+                suffixIcon: IconButton(
+                  onPressed: changeVisible, 
+                  icon: Icon(_hidePass?Icons.visibility:Icons.visibility_off)
+                )
               ),
             ),
             Text(errorMessage!),

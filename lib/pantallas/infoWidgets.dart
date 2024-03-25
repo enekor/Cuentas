@@ -1,3 +1,4 @@
+import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Gasto.dart';
 import 'package:cuentas_android/models/Mes.dart';
 import 'package:cuentas_android/themes/DarkTheme.dart';
@@ -5,8 +6,9 @@ import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/Get.dart';
 
+RxBool editarIngreso = false.obs;
 List<Widget> GetGastos({required List<Mes> meses, required String mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(int) onSelect, required Function onIWTap, required ThemeData theme}) {
     List<Widget> ret = [];
     int contador = 0;
@@ -71,7 +73,7 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     return ret;
   }
 
-  Widget appBarMesExists({required double width, required String mes,required List<Mes> meses, required String nCuenta, required double total, required Function navigateSettings}){
+  Widget appBarMesExists({required double width, required String mes,required Cuenta c, required Function navigateSettings}){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -80,29 +82,25 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MediaQuery(
-                  data: MediaQueryData.fromView(
-                      WidgetsBinding.instance.window),
-                  child: SizedBox(
-                    width: width * 0.5,
-                    child: Card(
-                        child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(mes),
-                        Text("${meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
-                      ],
-                    )),
-                  ),
+                SizedBox(
+                  width: width * 0.5,
+                  child: Card(
+                      child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(mes),
+                      Text("${c.Meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
+                    ],
+                  )),
                 ),
                 SizedBox(
                   width: width * 0.6,
                   child: Card(
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(nCuenta),
-                          Text("${total.toStringAsFixed(2)}€")
+                          Text(c.Nombre),
+                          Text("${c.GetTotal(Values().anno.value).toStringAsFixed(2)}€")
                       ])),
                 )
               ],
@@ -120,7 +118,6 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
 
     String _nombrenuevo = "";
     double _valorNuevo = 0;
-    bool ingresoEditar = false;
     showModalBottomSheet(
       isScrollControlled: true,
         context: context,
@@ -130,12 +127,13 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   //editar y ver ingreso base
-                  ingresoEditar
+                  editarIngreso.value
                       ? Row(
                           children: [
                             const Text("Ingresos"),
                             Expanded(
                               child:TextField(
+                                autofocus: true,
                                 keyboardType:TextInputType.number,
                                 decoration:const InputDecoration(labelText: "Monto"),
                                 onChanged:(v)=>onIngresoChange(double.parse(v))
@@ -143,20 +141,20 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
                             ),
                             IconButton(
                               icon: const Icon(Icons.check),
-                              onPressed: () =>ingresoEditar = false,
+                              onPressed: () =>editarIngreso.value = false,
                             )
                           ],
                         )
-                      : GestureDetector(
-                          onTap: () =>ingresoEditar =true,
-                          child: Row(
-                            mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Text("Ingresos"),
-                              Text(meses.where((v) =>v.NMes ==mes && v.Anno == Values().anno.value).first.Ingreso.toString()),
-                            ],
+                      : Row(
+                        mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Text("Ingresos"),
+                          TextButton(
+                            child: Text(meses.where((v) =>v.NMes ==mes && v.Anno == Values().anno.value).first.Ingreso.toStringAsFixed(2)),
+                            onPressed: () =>editarIngreso.value =true,
                           ),
-                        ),
+                        ],
+                      ),
                   //ver ingresos extra
                   Column(
                     children:GetIngresos(

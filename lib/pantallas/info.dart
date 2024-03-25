@@ -57,6 +57,7 @@ class Info extends StatelessWidget {
 
   void _updateIngreso(String mes, double valor){
     c.value.Meses.where((element) => element.NMes == mes && element.Anno == Values().anno.value).first.Ingreso = valor;
+    c.value = c.value;
   }
 
   void _deleteGasto(String nombre, double valor){
@@ -105,9 +106,7 @@ class Info extends StatelessWidget {
                 title:  c.value.Meses.where((element) => element.NMes == _mes.value && element.Anno == Values().anno.value).first.Ingreso != 0
                     ? iw.appBarMesExists(
                       mes: _mes.value,
-                      meses: c.value.Meses.obs,
-                      nCuenta: c.value.Nombre,
-                      total: c.value.GetTotal(Values().anno.value),
+                      c: c.value,
                       width: MediaQuery.of(context).size.width,
                       navigateSettings: ()=>_navigateSettings(context)
                     )
