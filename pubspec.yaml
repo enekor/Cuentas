@@ -37,6 +37,7 @@ dependencies:
   dart_format: ^1.1.17
   firebase_auth: ^4.17.9
   flutter_launcher_icons: ^0.13.1
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
     - lib/assets/images/gatoapunta.png
     - lib/assets/images/logo.png
     - lib/assets/images/gatobuscando.png
+    - lib/assets/images/gatoRascandoCabeza.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

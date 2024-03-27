@@ -1,6 +1,7 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/models/Gasto.dart';
+import 'package:cuentas_android/pattern/pattern.dart';
 import 'package:cuentas_android/widgets/views/settingsWidget.dart';
 import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/values.dart';
@@ -44,27 +45,30 @@ class settings extends StatelessWidget {
         onPopInvoked: (_) => _pop(context),
         child: Scaffold(
           resizeToAvoidBottomInset: true,
-          floatingActionButton:
-              crearNuevo(),
-          body: Center(
-            child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    cuenta.value.fijos.isNotEmpty
-                      ?fijosView(
-                        gastos: cuenta.value.fijos,
-                        onDelete: _onDelete,
-                        onChange: _onChange,
-                        theme: Theme.of(context))
-                      :noFijos(),
-                    Values().gastoSeleccionado.value == -2
-                        ? nuevoFijo(
-                            onCreate: _onCreate, theme: Theme.of(context))
-                        : Container()
-                  ],
-                )),
+          floatingActionButton:crearNuevo(),
+          appBar: fijosAppBar(fijos: cuenta.value.fijos, size: MediaQuery.of(context).size.width),
+          body: CustomPaint(
+            painter: MyPattern(context),
+            child: Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      cuenta.value.fijos.isNotEmpty
+                        ?fijosView(
+                          gastos: cuenta.value.fijos,
+                          onDelete: _onDelete,
+                          onChange: _onChange,
+                          theme: Theme.of(context))
+                        :noFijos(),
+                      Values().gastoSeleccionado.value == -2
+                          ? nuevoFijo(
+                              onCreate: _onCreate, theme: Theme.of(context))
+                          : Container()
+                    ],
+                  )),
+            ),
           ),
         ),
       ),

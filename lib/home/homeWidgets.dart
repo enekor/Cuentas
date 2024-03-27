@@ -1,17 +1,10 @@
-import 'dart:developer';
-
 import 'package:cuentas_android/models/Cuenta.dart';
-import 'package:cuentas_android/pantallas/info.dart';
-import 'package:cuentas_android/pantallas/summary.dart';
-import 'package:cuentas_android/pattern/positions.dart';
-import 'package:cuentas_android/themes/DarkTheme.dart';
-import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/ItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
- Widget selectYear({required List<Cuenta> cc,required double width,required ThemeData theme, required bool Function() selecSummary}) {
+ Widget selectYear({required List<Cuenta> cc,required double width,required ThemeData theme}) {
   RxBool _selecSummary = false.obs;
   return SizedBox(
     width: width/2,
@@ -20,45 +13,26 @@ import 'package:get/get.dart';
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Expanded(
-            flex:8,
-            child: DropdownButtonFormField(
-              dropdownColor: theme.primaryColor,
-              decoration: InputDecoration(
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  fillColor: theme.primaryColor,
-                  contentPadding: EdgeInsets.all(8)
+          DropdownButtonFormField(
+            dropdownColor: theme.primaryColor,
+            decoration: InputDecoration(
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
                 ),
-              value: Values().anno.value,
-              items: Values().GetAnnosDisponibles(cc).map((item) {
-                return DropdownMenuItem(
-                  value: item,
-                  child: Text(item.toString()),
-                );
-              }).toList(),
-              onChanged: (item) {
-                Values().anno.value = item!;
-              },
-            ),
-          ),
-          Expanded(
-            flex:2,
-            child: IconButton(
-              onPressed: (){
-                _selecSummary.value = selecSummary();
-              },
-              color: _selecSummary.value
-              ?theme.brightness == Brightness.dark
-                ? AppColorsD.errorButtonColor
-                :AppColorsL.errorButtonColor
-              :theme.brightness == Brightness.dark
-                ? AppColorsD.okButtonColor
-                :AppColorsL.okButtonColor,
-              icon: const Icon(Icons.manage_search),
+                fillColor: theme.primaryColor,
+                contentPadding: EdgeInsets.all(8)
               ),
+            value: Values().anno.value,
+            items: Values().GetAnnosDisponibles(cc).map((item) {
+              return DropdownMenuItem(
+                value: item,
+                child: Text(item.toString()),
+              );
+            }).toList(),
+            onChanged: (item) {
+              Values().anno.value = item!;
+            },
           )
         ],
       ),
@@ -93,15 +67,12 @@ void nuevoUsuario({required BuildContext context, required Function(String) onCh
   );
 }
 
-Widget hasData({required BuildContext context,required RxBool seleccionarSummary,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto, required Function(Cuenta) navigateInfo}){
+Widget hasData({required BuildContext context,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto, required Function(Cuenta) navigateInfo}){
     return Obx(()=>Center(
         child:Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            seleccionarSummary.value
-              ? const Text("Selecciona una cuenta para ver el historial")
-              : const SizedBox(),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

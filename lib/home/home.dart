@@ -16,7 +16,6 @@ class Home extends StatelessWidget {
   RxList<Cuenta> _cuentas = RxList([]);
   RxBool _vuelto = false.obs;
   RxBool _cargado = false.obs;
-  RxBool _seleccionarSummary = false.obs;
 
   String nuevoNombre = "";
 
@@ -25,11 +24,6 @@ class Home extends StatelessWidget {
       _cuentas.value = await cuentaDao().getDatos();
     }
     _cargado.value = true;
-  }
-
-  bool selecSummary(){
-    _seleccionarSummary.value = !_seleccionarSummary.value;
-    return _seleccionarSummary.value;
   }
 
   Future _logout() async{
@@ -42,12 +36,10 @@ class Home extends StatelessWidget {
     _vuelto.value = true;
   }
 
-  void _navigateInfo(BuildContext context, bool seleccionarSummary, Cuenta cuenta){
+  void _navigateInfo(BuildContext context, Cuenta cuenta){
     positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
     Navigator.of(context).push(
-    seleccionarSummary
-      ?MaterialPageRoute(builder: (context)=> SummaryPage(cuenta: cuenta,))
-      :MaterialPageRoute(builder: (context) => Info(cuenta:cuenta))
+    MaterialPageRoute(builder: (context) => Info(cuenta:cuenta))
     ).then((value) {
       _cuentas.value.where((c) => c.id == cuenta.id).toList().first = Values().cuentaRet!;
       Values().anno.value = DateTime.now().year;
@@ -77,8 +69,7 @@ class Home extends StatelessWidget {
                     hw.selectYear(
                       cc: _cuentas.value, 
                       width: MediaQuery.of(context).size.width, 
-                      theme: Theme.of(context), 
-                      selecSummary: selecSummary
+                      theme: Theme.of(context)
                     ),
                     IconButton(
                       onPressed: _logout /*cuentaDao().migrardatos*/, 
@@ -102,9 +93,8 @@ class Home extends StatelessWidget {
                 cuentas: _cuentas,
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                seleccionarSummary: _seleccionarSummary,
                 vuelto:(value)=>_vuelto.value = true,
-                navigateInfo: (cuenta)=>_navigateInfo(context,_seleccionarSummary.value,cuenta)
+                navigateInfo: (cuenta)=>_navigateInfo(context,cuenta)
               )
               :Center(
                 child: CircularProgressIndicator(color:Theme.of(context).primaryColor),

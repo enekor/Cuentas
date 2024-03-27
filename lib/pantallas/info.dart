@@ -1,5 +1,6 @@
 import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/models/Gasto.dart';
+import 'package:cuentas_android/pantallas/summary.dart';
 import 'package:cuentas_android/pantallas/visionado/ingresosGastos.dart';
 import 'package:cuentas_android/pantallas/visionado/settings.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
@@ -73,6 +74,11 @@ class Info extends StatelessWidget {
       });
   }
 
+  void _navigateSummary(BuildContext context){
+    positions().ChangePositions(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SummaryPage(cuenta:c.value)));
+  }
+
 //pantalla
   @override
   Widget build(BuildContext context) {
@@ -90,7 +96,6 @@ class Info extends StatelessWidget {
               mes: _mes.value,
               c: c.value,
               width: MediaQuery.of(context).size.width,
-              navigateSettings: ()=>_navigateSettings(context)
             )
             : const Text("Inicio de mes"),
       ),
@@ -107,7 +112,9 @@ class Info extends StatelessWidget {
                   onSelected: (v)=>Values().gastoSeleccionado.value = v,
                   deleted: _toDelete,
                   onSelecMes: _seleccionarMes,
-                  onIngresoGastosPressed: (isIngreso)=>_navigateIngresosGasto(context,isIngreso)
+                  onIngresoGastosPressed: (isIngreso)=>_navigateIngresosGasto(context,isIngreso),
+                  navigateSummary: ()=>_navigateSummary(context),
+                  navigateSettings: ()=>_navigateSettings(context)
                 )
               )
             ),

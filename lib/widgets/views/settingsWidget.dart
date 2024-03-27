@@ -102,3 +102,18 @@ FloatingActionButton crearNuevo(){
     ),
   );
 }
+
+AppBar fijosAppBar({required List<Gasto> fijos, required double size}){
+  return AppBar(
+    title: SizedBox(
+      width: size/1.5,
+      child: Card(child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const Text("Valor total",style: TextStyle(fontWeight: FontWeight.bold),),
+          Text("${fijos.fold(0.0, (previousValue, fijo) => previousValue+fijo.valor).toStringAsFixed(2)}€",style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),),
+    ),
+  );
+}

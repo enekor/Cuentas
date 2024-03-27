@@ -11,12 +11,13 @@ TextEditingController _nombreNuevo = TextEditingController();
 TextEditingController _valorNuevo = TextEditingController();
 TextEditingController _ingresoNuevo = TextEditingController();
 RxBool _isIngresoSeleccionado = false.obs;
+RxBool _extraSelected = false.obs;
 
-String valorTotal(bool isIngreso, double gastos, double ingresos){
-  return isIngreso ? (-1*gastos + ingresos).toStringAsFixed(2) : gastos.toStringAsFixed(2);
+String valorTotal(bool isIngreso, double gastos, double extras, double ingresos){
+  return isIngreso ? (-1*gastos + ingresos).toStringAsFixed(2) : (gastos+extras).toStringAsFixed(2);
 }
 
-AppBar appBar({required List<Gasto> datos, required bool isIngreso, required Function(double) onIngresoChange, required double ingreso, required ThemeData theme}){
+AppBar appBar({required List<Gasto> datos,required List<Gasto> extras, required bool isIngreso, required Function(double) onIngresoChange, required double ingreso, required ThemeData theme}){
   return AppBar(
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,7 +29,7 @@ AppBar appBar({required List<Gasto> datos, required bool isIngreso, required Fun
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 const Text("Valor total"),
-                Text("${valorTotal(isIngreso, datos.fold(0.0, (prevValue, gasto) => prevValue + gasto.valor), ingreso)}€")
+                Text("${valorTotal(isIngreso, datos.fold(0.0, (prevValue, gasto) => prevValue + gasto.valor), extras.fold<double>(0, (previousValue, extra) => previousValue+extra.valor),ingreso)}€")
               ],
             ),
           ),
@@ -44,31 +45,85 @@ AppBar appBar({required List<Gasto> datos, required bool isIngreso, required Fun
   );
 }
 
-Widget bodyHasDatos({required List<Gasto> datos, required Function(String,double) onSaveValue, required Function(String,double) onDeleteValue, required ThemeData theme, required bool isIngresos, required RxDouble extras, required Function navigateExtras}){
+Widget bodyHasDatos({required List<Gasto> gastos, required RxList<Gasto> extras,required Function(String,double) onSaveValue, required Function(String,double) onDeleteValue, required ThemeData theme, required bool isIngresos, required Function(String,double) onSaveExtra,required Function(String,double) onDeleteExtra}){
   List<Widget> cards = [];
+  List<Widget> extraCards = [];
   int contador = 1;
+  double valorExtras = extras.fold<double>(0.0, (previousValue, gasto) => previousValue+gasto.valor);
 
-  for(Gasto gasto in datos){
-    cards.add(gastoView(onSaveValue, onDeleteValue, (selec)=>Values().gastoSeleccionado.value = selec, gasto.nombre, isIngresos?-1*gasto.valor:gasto.valor, contador, theme));
+  if(gastos.isNotEmpty){
+    for(Gasto gasto in gastos){
+      cards.add(gastoView(onSaveValue, onDeleteValue, (selec)=>Values().gastoSeleccionado.value = selec, gasto.nombre, isIngresos?-1*gasto.valor:gasto.valor, contador, theme));
+      contador++;
+    }
+  }else{
+    _extraSelected.value = true;
+  }
+
+  for(Gasto extra in extras){
+    extraCards.add(gastoView(onSaveExtra, onDeleteExtra, (pos)=>Values().gastoSeleccionado.value = pos, extra.nombre, extra.valor, contador, theme));
     contador++;
   }
 
-  return SingleChildScrollView(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(children: cards,),
-        !isIngresos
-          ?Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      gastos.isNotEmpty
+        ?Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Text("Gastos"),
+                Text("${gastos.fold<double>(0.0, (previousValue, gasto) => previousValue+gasto.valor).toStringAsFixed(2)}€")
+              ],
+            ),
+            Column(children: cards,)
+          ]
+        )
+        :Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "lib/assets/images/gatoRascandoCabeza.png",
+              height: 200,
+              width: 200,
+            ),
+            const Text("Esto está muy vacio")
+          ],
+        ),
+      !isIngresos
+        ? Divider()
+        : Container(),
+      !isIngresos
+        ?Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const Text("Extras"),
+            TextButton(onPressed: ()=>_extraSelected.value = !_extraSelected.value, child: Text("${valorExtras.toStringAsFixed(2)}€"))
+          ],
+        )
+        : Container(),
+      _extraSelected.value
+        ? extras.isNotEmpty
+          ? Column( 
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: extraCards,
+          )
+          : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Extras"),
-              TextButton(onPressed: ()=>navigateExtras(), child: Text("${extras.value.toStringAsFixed(2)}€"))
+              Image.asset(
+                "lib/assets/images/gatook.png",
+                height: 200,
+                width: 200
+              ),
+              const Text("¡Que bien! no hay extras")
             ],
           )
-          : Container()
-      ],
-    ),
+        : Container()
+    ],
   );
 }
 
@@ -87,10 +142,27 @@ FloatingActionButton floatingButton(){
   );
 }
 
-Widget createNew({required Function(String,double) onCreate, required ThemeData theme}){
+Widget createNew({required Function(String,double) onCreateGasto, required Function(String,double) onCreateExtra, required ThemeData theme}){
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
+      IconButton(
+        onPressed: () {
+          Values().gastoSeleccionado.value = -1;
+          if(_extraSelected.value){
+            onCreateExtra(_nombreNuevo.text,double.parse(_valorNuevo.text));
+          }else{
+            onCreateGasto(_nombreNuevo.text,double.parse(_valorNuevo.text));
+          }
+          _nombreNuevo.clear();
+          _valorNuevo.clear();
+        }, 
+        icon: const Icon(Icons.check), 
+        color: theme.brightness == Brightness.dark
+          ?AppColorsD.okButtonColor
+          :AppColorsL.okButtonColor
+      ),
+      const SizedBox(width: 8,),
       Expanded(child: TextField(
         controller: _nombreNuevo,
         decoration: const InputDecoration(
@@ -106,17 +178,6 @@ Widget createNew({required Function(String,double) onCreate, required ThemeData 
         ),
         keyboardType: TextInputType.number,
       )),
-      const SizedBox(width: 8,),
-      IconButton(
-        onPressed: () {
-          Values().gastoSeleccionado.value = -1;
-          onCreate(_nombreNuevo.text,double.parse(_valorNuevo.text));
-        }, 
-        icon: const Icon(Icons.check), 
-        color: theme.brightness == Brightness.dark
-          ?AppColorsD.okButtonColor
-          :AppColorsL.okButtonColor
-      )
     ],
   );
 }
@@ -126,6 +187,18 @@ Widget ingresoView({required Function(double) onIngresoChange, required double i
     ? Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
+        IconButton(
+          onPressed: (){
+            _isIngresoSeleccionado.value = false;
+            onIngresoChange(double.parse(_ingresoNuevo.text));
+          },
+          icon: const Icon(Icons.check),
+          color: theme.brightness == Brightness.dark
+            ? AppColorsD.okButtonColor
+            : AppColorsL.okButtonColor,
+          iconSize: theme.textTheme.labelLarge!.fontSize
+        ),
+        const SizedBox(width: 8,),
         Text("Ingreso base", style: TextStyle(fontSize: theme.textTheme.labelLarge!.fontSize),),
         const SizedBox(width: 8,),
         Expanded(
@@ -137,18 +210,6 @@ Widget ingresoView({required Function(double) onIngresoChange, required double i
             keyboardType: TextInputType.number,
           ),
         ),
-        const SizedBox(width: 8,),
-        IconButton(
-          onPressed: (){
-            _isIngresoSeleccionado.value = false;
-            onIngresoChange(double.parse(_ingresoNuevo.text));
-          },
-          icon: const Icon(Icons.check),
-          color: theme.brightness == Brightness.dark
-            ? AppColorsD.okButtonColor
-            : AppColorsL.okButtonColor,
-          iconSize: theme.textTheme.labelLarge!.fontSize
-        )
       ],
     )
     :Row(

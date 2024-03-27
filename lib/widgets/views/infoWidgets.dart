@@ -5,8 +5,10 @@ import 'package:cuentas_android/themes/DarkTheme.dart';
 import 'package:cuentas_android/themes/LightTheme.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:cuentas_android/widgets/GastoView.dart';
+import 'package:cuentas_android/widgets/ItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 RxBool editarIngreso = false.obs;
 List<Widget> GetGastos({required List<Mes> meses, required String mes, required Function(String,double) onSave, required Function(String,double) onDelete,required Function(int) onSelect, required Function onIWTap, required ThemeData theme}) {
@@ -73,53 +75,71 @@ List<Widget> GetGastos({required List<Mes> meses, required String mes, required 
     return ret;
   }
 
-  Widget appBarMesExists({required double width, required String mes,required Cuenta c, required Function navigateSettings}){
+  Widget appBarMesExists({required double width, required String mes,required Cuenta c}){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Expanded(
-          flex: 9,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: width * 0.5,
-                  child: Card(
-                      child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(mes),
-                      Text("${c.Meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
-                    ],
-                  )),
-                ),
-                SizedBox(
-                  width: width * 0.6,
-                  child: Card(
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(c.Nombre),
-                          Text("${c.GetTotal(Values().anno.value).toStringAsFixed(2)}€")
-                      ])),
-                )
-              ],
-          ),
-        ),
-        Expanded(
-          flex:1,
-          child: IconButton(icon: const Icon(Icons.receipt_long_rounded),onPressed: ()=>navigateSettings(),),
+        Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: width * 0.5,
+                child: Card(
+                    child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(mes),
+                    Text("${c.Meses.where((v) => v.NMes == mes && v.Anno == Values().anno.value).first.GetAhorros().toStringAsFixed(2)}€")
+                  ],
+                )),
+              ),
+              SizedBox(
+                width: width * 0.6,
+                child: Card(
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(c.Nombre),
+                        Text("${c.GetTotal(Values().anno.value).toStringAsFixed(2)}€")
+                    ])),
+              )
+            ],
         )
       ],
     );
   }
 
-  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context,  required Rx<Cuenta> cuenta,required Function(int) onSelected, required List<Gasto> deleted, required Function(String) onSelecMes, required Function(bool) onIngresoGastosPressed}){
+  Widget bodyMesExists({required ThemeData theme,required String mes, required BuildContext context,  required Rx<Cuenta> cuenta,required Function(int) onSelected, required List<Gasto> deleted, required Function(String) onSelecMes, required Function(bool) onIngresoGastosPressed, required Function navigateSummary,required Function navigateSettings}){
     
     return Obx(()=>Column(
-        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              CardButton(
+                onPressed: navigateSummary,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.summarize),
+                    Text("Ver resumen de cuenta")
+                  ],
+                ),
+              ),
+              CardButton(
+                onPressed: navigateSettings, 
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FaIcon(FontAwesomeIcons.moneyCheckDollar),
+                    Text("Ver gastos recurrentes")
+                  ],
+                )
+              )
+            ],
+          ),
+          const SizedBox(height: 40,),
           //selector de meses
           Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
