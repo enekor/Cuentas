@@ -2,11 +2,11 @@ import 'package:cuentas_android/dao/cuentaDao.dart';
 import 'package:cuentas_android/dao/userDao.dart';
 import 'package:cuentas_android/models/Cuenta.dart';
 import 'package:cuentas_android/pantallas/info.dart';
-import 'package:cuentas_android/pantallas/summary.dart';
 import 'package:cuentas_android/pattern/positions.dart';
 import 'package:cuentas_android/values.dart';
 import 'package:flutter/material.dart';
 import 'package:cuentas_android/pattern/pattern.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/Get.dart';
 import 'package:cuentas_android/home/homeWidgets.dart' as hw;
 
@@ -30,10 +30,11 @@ class Home extends StatelessWidget {
     await Auth().signOut();
   }
 
-  Future _createUser()async{
+  Future _createUser(BuildContext context)async{
     var cuenta = await cuentaDao().crearNuevaCuenta(nuevoNombre,_cuentas.length+1);
     _cuentas.add(cuenta);
     _vuelto.value = true;
+    Navigator.pop(context);
   }
 
   void _navigateInfo(BuildContext context, Cuenta cuenta){
@@ -46,40 +47,25 @@ class Home extends StatelessWidget {
     });
   }
 
+  void _deleteCuenta(Cuenta cuenta)async {
+    _cuentas.value.remove(cuenta);
+    await cuentaDao().deleteCuenta(cuenta);
+  }
+
   @override
   Widget build(BuildContext context) {
     _getCuentas();
     return Obx(()=>_cargado.value
       ?Scaffold(
         resizeToAvoidBottomInset: true,
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
+          label: IconButton(onPressed:_logout,icon: const FaIcon(FontAwesomeIcons.rightFromBracket)),
           onPressed: ()=>hw.nuevoUsuario(
             context: context, 
             onChange: (value) => nuevoNombre = value, 
-            onPressed: _createUser
+            onPressed: ()=>_createUser(context)
             ),
-          child: const Icon(Icons.person_add),
-        ),
-        appBar: AppBar(
-          title: Obx(()=> _cargado.value 
-              ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: 
-                  [
-                    hw.selectYear(
-                      cc: _cuentas.value, 
-                      width: MediaQuery.of(context).size.width, 
-                      theme: Theme.of(context)
-                    ),
-                    IconButton(
-                      onPressed: _logout /*cuentaDao().migrardatos*/, 
-                      icon: const Icon(Icons.logout)
-                    )
-                  ]
-                ) 
-              : CircularProgressIndicator(color:Theme.of(context).primaryColor,),
-          ),
-          backgroundColor: Colors.transparent,
+            icon: Icon(Icons.person_add),
         ),
         body: CustomPaint(
           painter: MyPattern(context),
@@ -94,7 +80,9 @@ class Home extends StatelessWidget {
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 vuelto:(value)=>_vuelto.value = true,
-                navigateInfo: (cuenta)=>_navigateInfo(context,cuenta)
+                navigateInfo: (cuenta)=>_navigateInfo(context,cuenta),
+                delete: (cuenta)=>_deleteCuenta(cuenta),
+                logout: _logout
               )
               :Center(
                 child: CircularProgressIndicator(color:Theme.of(context).primaryColor),

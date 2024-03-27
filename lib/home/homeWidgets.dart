@@ -17,6 +17,7 @@ import 'package:get/get.dart';
             dropdownColor: theme.primaryColor,
             decoration: InputDecoration(
                 filled: true,
+                constraints: BoxConstraints(maxWidth: width/4),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -67,32 +68,33 @@ void nuevoUsuario({required BuildContext context, required Function(String) onCh
   );
 }
 
-Widget hasData({required BuildContext context,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto, required Function(Cuenta) navigateInfo}){
-    return Obx(()=>Center(
-        child:Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: cuentas.value.map<Widget>((cuenta) => GestureDetector(
-                  onTap: ()=>navigateInfo(cuenta),
-                  child: SizedBox(
-                    height: width/4,
-                    width:  width/4,
-                    child: Center(
-                      child: ItemCard(cuenta.Nombre,
-                          cuenta.GetTotal(Values().anno.value)),
-                    ),
-                  )))
-                  .toList()
-              ),
-            ),
-          ],
+Widget hasData({required BuildContext context,required RxList<Cuenta> cuentas,required double width, required double height, required Function(dynamic) vuelto, required Function(Cuenta) navigateInfo, required Function(Cuenta) delete, required Function logout}){
+  return Obx(()=>Center(
+    child:Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        selectYear(
+          cc: cuentas.value, 
+          width: MediaQuery.of(context).size.width, 
+          theme: Theme.of(context)
         ),
-      ),
-    );
-  }
+        const SizedBox(height: 80,),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: cuentas.value.map<Widget>((cuenta) => SizedBox(
+              width:  width/4,
+              child: Center(
+                child: ItemCard(cuenta.Nombre,cuenta.GetTotal(Values().anno.value),delete: ()=>delete(cuenta),open: ()=>navigateInfo(cuenta)),
+              ),
+            ))
+              .toList()
+          ),
+        ),
+      ],
+    ),
+  ));
+}

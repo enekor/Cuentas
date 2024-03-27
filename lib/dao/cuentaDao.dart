@@ -75,4 +75,8 @@ class cuentaDao{
     
   }
 
+  Future deleteCuenta(Cuenta c) async{
+    await  ref.doc("${c.id}-${c.posicion}").delete();
+  }
+
 }
